@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <limits.h>
-
+#include <assert.h>
 
 typedef enum { CODE_OK = 0, INTEGER_OVERFLOW_ERROR, LOGIC_ERROR, INPUT_ERROR} ERROR_CODE;
 
@@ -55,8 +55,8 @@ long long reverse(long long x) {
     return y;
 }
 
-int HANDLE_ERROR(const ERROR_CODE e) {
-    switch (e) {
+int HANDLE_ERROR(const ERROR_CODE error) {
+    switch (error) {
         case CODE_OK:
             fprintf(stderr, "OK\n");
             return 0;
@@ -68,8 +68,13 @@ int HANDLE_ERROR(const ERROR_CODE e) {
             break;
 
         case LOGIC_ERROR:
-            perror("Logic error happened");
+            fprintf(stderr, "Logic error\n");
             return 1;
+            break;
+
+        case INPUT_ERROR:
+            fprintf(stderr, "Input error\n");
+            return EXIT_FAILURE;
             break;
 
         default:

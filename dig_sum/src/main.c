@@ -1,24 +1,34 @@
 #include <stdio.h>
 #include <limits.h>
+#include <errno.h>
+#include <stdlib.h>
+#include <assert.h>
 
 
-typedef enum { OK = 0, INTEGER_OVERFLOW } ERROR_CODE;
+typedef enum { CODE_OK = 0, INTEGER_OVERFLOW_ERROR, LOGIC_ERROR} ERROR_CODE;
 
 ERROR_CODE dij_sum(long long *, long long);
+ERROR_CODE input_handling(const char *, long long *);
+int HANDLE_ERROR(const ERROR_CODE);
 
-int HANDLE_ERROR(const enum ERROR_CODE);
 
+int main(void) {
+    char input[100];
+    fgets(input, 100, stdin);
+    
+    long long x = 0;
 
-int main(const signed argc, const char* argv[]) {
-    long long x;
-    scanf("%lli", &x);
+    if (HANDLE_ERROR(input_handling(input, &x))) {
+        return 1;
+    }
+
     long long sum = 0;
     if (HANDLE_ERROR(dij_sum(&sum, x))) {
         return 1;
     }
 
     printf("%lli", sum);
-    return 0;
+    return EXIT_FAILURE;
 }
 
 ERROR_CODE dij_sum(long long *sum, long long x) {
@@ -26,19 +36,27 @@ ERROR_CODE dij_sum(long long *sum, long long x) {
         *sum += x % 10;
         x /= 10;
     }
-    return OK;
+    return CODE_OK;
+
 }
 
-int HANDLE_ERROR(const enum ERROR_CODE e) {
+int HANDLE_ERROR(const ERROR_CODE e) {
     switch (e) {
-        case OK:
-            fprintf(stderr, "OK\n");
+        case CODE_OK:
+            fprintf(stderr, "CODE_OK\n");
             return 0;
             break;
-        case INTEGER_OVERFLOW:
-            fprintf(stderr, "INTEGER OVERFLOW\n");
+
+        case INTEGER_OVERFLOW_ERROR:
+            fprintf(stderr, "\n");
             return 1;
             break;
+
+        case LOGIC_ERROR:
+            fprintf(stderr, "Logic error\n");
+            return 1;
+            break;
+
         default:
             fprintf(stderr, "SOMETHING HAPPENED\n");
             return 1;
@@ -46,4 +64,21 @@ int HANDLE_ERROR(const enum ERROR_CODE e) {
     }
 }
 
+ERROR_CODE input_handling(const char *input, long long *x) {
+    assert(input && "input string is null");
+    assert(x && "result is null");
 
+    char *eptr;
+            
+    *x = strtol(input, &eptr, 10);
+
+    if ((*x == LLONG_MIN || *x == LLONG_MAX) && errno == ERANGE) {
+        return INTEGER_OVERFLOW_ERROR;
+    }
+
+    if (errno == EINVAL) {
+        return LOGIC_ERROR;
+    }
+
+    return CODE_OK;
+}
