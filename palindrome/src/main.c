@@ -17,19 +17,23 @@ int main(void) {
     fgets(input, 100, stdin);
     long long x = 0;
 
+    fprintf(stderr, "read: ");
     if (HANDLE_ERROR(input_handling(input, &x))) {
-        return 1;
+        return EXIT_FAILURE;
     }
 
+    fprintf(stderr, "compute: ");
     if (HANDLE_ERROR(pal(&x))) {
-        return 1;
+        return EXIT_FAILURE;
     }
 
-    printf("%lli", x);
-    return 0;
+    printf("%lli\n", x);
+    return EXIT_SUCCESS;
 }
 
 ERROR_CODE pal(long long *x) {
+    assert(x && "palindrom is NULL");
+
     long long rev_x = reverse(*x);
     if (rev_x == *x) {
         return CODE_OK;
@@ -59,17 +63,17 @@ int HANDLE_ERROR(const ERROR_CODE error) {
     switch (error) {
         case CODE_OK:
             fprintf(stderr, "OK\n");
-            return 0;
+            return EXIT_SUCCESS;
             break;
 
         case INTEGER_OVERFLOW_ERROR:
             fprintf(stderr, "Integer overflow\n");
-            return 1;
+            return EXIT_FAILURE;
             break;
 
         case LOGIC_ERROR:
             fprintf(stderr, "Logic error\n");
-            return 1;
+            return EXIT_FAILURE;
             break;
 
         case INPUT_ERROR:
@@ -79,7 +83,7 @@ int HANDLE_ERROR(const ERROR_CODE error) {
 
         default:
             fprintf(stderr, "Something happened idk\n");
-            return 1;
+            return EXIT_FAILURE;
             break;
     }
 }
@@ -88,9 +92,9 @@ ERROR_CODE input_handling(const char *input, long long *x) {
     assert(input && "input string is null");
     assert(x && "result is null");
 
-    char *eptr;
+    char *end_ptr;
     
-    *x = strtol(input, &eptr, 10);
+    *x = strtol(input, &end_ptr, 10);
 
     if ((*x == LLONG_MIN || *x == LLONG_MAX) && errno == ERANGE) {
         return INTEGER_OVERFLOW_ERROR;
