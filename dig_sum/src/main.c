@@ -2,9 +2,10 @@
 #include <limits.h>
 
 
-enum ERROR_CODE { OK = 0, INTEGER_OVERFLOW };
+typedef enum { OK = 0, INTEGER_OVERFLOW } ERROR_CODE;
 
-enum ERROR_CODE dij_sum(long long *, long long);
+ERROR_CODE dij_sum(long long *, long long);
+
 int HANDLE_ERROR(const enum ERROR_CODE);
 
 
@@ -20,7 +21,7 @@ int main(const signed argc, const char* argv[]) {
     return 0;
 }
 
-enum ERROR_CODE dij_sum(long long *sum, long long x) {
+ERROR_CODE dij_sum(long long *sum, long long x) {
     while(x > 0) {
         *sum += x % 10;
         x /= 10;
@@ -44,3 +45,5 @@ int HANDLE_ERROR(const enum ERROR_CODE e) {
             break;
     }
 }
+
+
