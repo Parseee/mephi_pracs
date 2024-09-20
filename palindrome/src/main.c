@@ -94,7 +94,7 @@ ERROR_CODE input_handling(const char *input, long long *x) {
 
     char *end_ptr;
     
-    *x = strtol(input, &end_ptr, 10);
+    *x = strtoll(input, &end_ptr, 10);
 
     if ((*x == LLONG_MIN || *x == LLONG_MAX) && errno == ERANGE) {
         return INTEGER_OVERFLOW_ERROR;
