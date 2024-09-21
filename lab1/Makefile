@@ -8,7 +8,7 @@ CC = gcc
 
 DEBUG_ = 1
 
-CFLAGS = -O2 -Wall -Wextra  \
+CFLAGS = -O2 -Wall -Wextra -g \
 		-Wmissing-declarations -Wcast-align -Wcast-qual -Wchar-subscripts \
 		-Wconversion -Wempty-body -Wfloat-equal \
 		-Wformat-nonliteral -Wformat-security -Wformat=2 -Winline \

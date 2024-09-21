@@ -30,8 +30,6 @@ int main(void) {
         return EXIT_FAILURE;
     }
 
-    printf("\n%lli %lli\n", inp_val_m, inp_val_x);
-
     int64_t result = 0;
     fprintf(stderr, "compute: ");
     if (HANDLE_ERROR(compute(&inp_val_x, &inp_val_m, &result))) {
@@ -50,11 +48,16 @@ ERROR_CODE compute(int64_t *x, int64_t *m, int64_t *res) {
     int64_t tmp_x = *x;
     int64_t base = 1;
 
-    while (tmp_x > 0) {
-        *res += ((int64_t)((tmp_x % 10) + *m) % 10) * base;
+    while (llabs(tmp_x) > 0ll) {
+        *res += ((int64_t)(llabs(tmp_x % 10) + *m) % 10) * base;
         tmp_x /= 10;
         base *= 10;
     }
+
+    if (*x < 0) {
+        *res *= -1;
+    }
+    
     return CODE_OK;
 }
 
