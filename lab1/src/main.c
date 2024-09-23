@@ -50,7 +50,6 @@ ERROR_CODE compute(int64_t *x, int64_t *m, int64_t *res) {
 
     while (llabs(tmp_x) > 0ll) {
         *res += ((int64_t)(llabs(tmp_x % 10) + *m) % 10) * base;
-        fprintf(stderr, "%lli\n", *res);
         tmp_x /= 10;
         base *= 10;
     }
