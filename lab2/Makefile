@@ -20,8 +20,7 @@ CFLAGS = -O2 -Wall -Wextra -g \
 		-Wno-missing-field-initializers -Wno-narrowing -Wno-varargs \
 		-Wstack-protector -fcheck-new -fstack-protector -fstrict-overflow \
 		-fno-omit-frame-pointer -Wlarger-than=81920 -Wstack-protector -Werror=vla \
-		
-#-fsanitize=address,alignment,bool,bounds,enum,float-cast-overflow,float-divide-by-zero,$\
+		-fsanitize=address,alignment,bool,bounds,enum,float-cast-overflow,float-divide-by-zero,$\
 		integer-divide-by-zero,nonnull-attribute,null,object-size,return,returns-nonnull-attribute,$\
 		shift,signed-integer-overflow,undefined,unreachable,vla-bound,vptr
 
