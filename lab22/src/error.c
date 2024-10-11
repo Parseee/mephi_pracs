@@ -8,8 +8,6 @@
 #include <assert.h>
 #include <math.h>
 #include <sys/errno.h>
-#include <termios.h>
-#include <unistd.h>
 
 #include "error.h"
 
@@ -47,7 +45,7 @@ int handle_error(ERROR_CODE const error) {
 
 static int check_EOF(char const * const str) { // what to return
     int idx = 0;
-    while (str[idx] != EOF) {
+    while (str[idx] != '\0') {
         if (str[idx] == EOF) {
             return EOF;
         }
@@ -56,20 +54,19 @@ static int check_EOF(char const * const str) { // what to return
     return 0;
 }
 
-static ERROR_CODE flush() {
-    int symbol = getchar();
-    for (;symbol != '\n' && symbol != EOF && ferror(stdin) == 0;
-        symbol = getchar());
+// static ERROR_CODE flush_stdin() {
+//     int symbol = getchar();
+//     for (;symbol != '\n' && symbol != EOF && ferror(stdin) == 0;
+//         symbol = getchar());
 
-    return ferror(stdin) ? INPUT_ERROR : CODE_OK;
-}
+//     return ferror(stdin) ? INPUT_ERROR : (symbol == EOF ? INPUT_ERROR : CODE_OK);
+// }
 
 ERROR_CODE handle_input_floating(char const * const input, float * const x) {
     assert(input && "input string is null");
     assert(x && "result is null");
 
-    if (feof(stdin)) {
-        clearerr(stdin);
+    if (check_EOF(input)) {
         return INPUT_ERROR;
     }
 
@@ -85,7 +82,13 @@ ERROR_CODE handle_input_floating(char const * const input, float * const x) {
         return INVALID_INPUT_ERROR;
     }
 
-    // return flush();
+    if (fflush(stdin)) {
+        if (errno == EBADF) {
+            return INPUT_ERROR;
+        } else {
+            return OTHER_ERROR; // too many errors from write()
+        }
+    }
     return CODE_OK;
 }
 
@@ -93,7 +96,7 @@ ERROR_CODE handle_input_int(char const * const input, int64_t * const x) {
     assert(input && "input string is null");
     assert(x && "result is null");
 
-    if (feof(stdin)) {
+    if (check_EOF(input)) {
         return INPUT_ERROR;
     }
 
@@ -109,12 +112,12 @@ ERROR_CODE handle_input_int(char const * const input, int64_t * const x) {
         return INVALID_INPUT_ERROR;
     }
 
-    // if (fflush(stdin)) {
-    //     if (errno == EBADF) {
-    //         return INPUT_ERROR;
-    //     } else {
-    //         return OTHER_ERROR; // too many errors from write()
-    //     }
-    // }
+    if (fflush(stdin)) {
+        if (errno == EBADF) {
+            return INPUT_ERROR;
+        } else {
+            return OTHER_ERROR; // too many errors from write()
+        }
+    }
     return CODE_OK;
 }

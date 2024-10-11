@@ -6,11 +6,10 @@
 #include <stdlib.h>
 
 #include <math.h> // replace with annealing
-#include <unistd.h>
 
 #include "error.h"
 
-#define EPS 1e-10
+#define EPS 1e-9
 #define INPUT_STRING_SIZE 100
 
 ERROR_CODE handle_input_int(const char*, int64_t*);
@@ -26,12 +25,13 @@ int main(void) {
     printf("x: ");
     do {
         fgets(input, INPUT_STRING_SIZE, stdin);
+        
     } while (handle_error(handle_input_floating(input, &x)));
 
-    // printf("accuracy (10^-n): ");
-    // do {
-    //     fgets(input, INPUT_STRING_SIZE, stdin);
-    // } while (handle_error(handle_input_int(input, &accuracy)));
+    printf("accuracy (10^-n): ");
+    do {
+        fgets(input, INPUT_STRING_SIZE, stdin);
+    } while (handle_error(handle_input_int(input, &accuracy)));
 
     float result = 0.0;
     compute(x, accuracy, &result);
@@ -50,7 +50,7 @@ ERROR_CODE compute(float const x, int64_t const accuracy, float* const res) {
     *res = x;
     float powr = x * x * x;
     float add = 0.0;
-    float reference = 0;
+    float reference = pow(1, -1 * accuracy);
     do {
         if (even == 0) {
             break; // logic error? computation limit exeeded
@@ -66,7 +66,7 @@ ERROR_CODE compute(float const x, int64_t const accuracy, float* const res) {
         iters += 1;
 
         *res += add;
-    } while (iters <= accuracy);
+    } while (fabs(add) <= reference);
 
     return CODE_OK;
 }
