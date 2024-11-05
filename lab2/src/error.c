@@ -1,5 +1,4 @@
 #include <stdint.h>
-#include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -39,29 +38,10 @@ int handle_error(ERROR_CODE const error) {
             report_error("Invalid input data");
             break;
 
-        default:
+        case OTHER_ERROR:
             report_error("Something happened idk");
             break;
     }
-}
-
-static int check_EOF(char const * const str) { // what to return
-    int idx = 0;
-    while (str[idx] != EOF) {
-        if (str[idx] == EOF) {
-            return EOF;
-        }
-        ++idx;
-    }
-    return 0;
-}
-
-static ERROR_CODE flush() {
-    int symbol = getchar();
-    for (;symbol != '\n' && symbol != EOF && ferror(stdin) == 0;
-        symbol = getchar());
-
-    return ferror(stdin) ? INPUT_ERROR : CODE_OK;
 }
 
 ERROR_CODE handle_input_floating(char const * const input, float * const x) {

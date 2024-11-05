@@ -28,10 +28,10 @@ int main(void) {
         fgets(input, INPUT_STRING_SIZE, stdin);
     } while (handle_error(handle_input_floating(input, &x)));
 
-    // printf("accuracy (10^-n): ");
-    // do {
-    //     fgets(input, INPUT_STRING_SIZE, stdin);
-    // } while (handle_error(handle_input_int(input, &accuracy)));
+    printf("accuracy (10^-n): ");
+    do {
+        fgets(input, INPUT_STRING_SIZE, stdin);
+    } while (handle_error(handle_input_int(input, &accuracy)));
 
     float result = 0.0;
     compute(x, accuracy, &result);

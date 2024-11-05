@@ -8,7 +8,7 @@ CC = gcc
 
 DEBUG_ = 1
 
-CFLAGS = -O2 -Wall -Wextra -g -std=c11\
+CFLAGS = -O2 -Wall -Wextra -g -std=c11 \
 		-Wmissing-declarations -Wcast-align -Wcast-qual -Wchar-subscripts \
 		-Wconversion -Wempty-body -Wfloat-equal \
 		-Wformat-nonliteral -Wformat-security -Wformat=2 -Winline \
@@ -53,7 +53,7 @@ $(BUILD_DIRS):
 clean: clean_bin clean_obj
 
 clean_bin:
-	rm $(EXECS)
+	rm $(PROJECT_NAME).out
 
 clean_obj:
 	rm -rf ./build
