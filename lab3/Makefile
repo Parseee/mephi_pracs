@@ -1,10 +1,15 @@
 .PHONY: all clean
 
+UNAME = $(shell uname -s)
+
 PROJECT_NAME = lab3
 
 SRC_DIR = ./src
 BUILD_DIR = ./build
-CC = gcc-14
+CC = gcc
+ifeq ($(UNAME), Darwin)
+	CC += -14
+endif
 
 DEBUG_ = 1
 
