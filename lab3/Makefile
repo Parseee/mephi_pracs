@@ -8,12 +8,12 @@ SRC_DIR = ./src
 BUILD_DIR = ./build
 CC = gcc
 ifeq ($(UNAME), Darwin)
-	CC += -14
+	CC = gcc-14
 endif
 
 DEBUG_ = 1
 
-CFLAGS =-Wall -Wextra -Waggressive-loop-optimizations -g \
+CFLAGS =-Wall -Wextra -Waggressive-loop-optimizations \
 		-Wmissing-declarations -Wcast-align -Wcast-qual -Wchar-subscripts \
 		-Wconversion -Wempty-body -Wfloat-equal \
 		-Wformat-nonliteral -Wformat-security -Wformat-signedness -Wformat=2 -Winline -Wlogical-op \
@@ -47,7 +47,7 @@ $(PROJECT_NAME).out: $(OBJECTS_REL_PATH)
 	@$(CC) $(CFLAGS) $^ -o $@
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c | $(BUILD_DIRS)
-	@$(CC) $(CFLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) -g -c $< -o $@
 
 # -include $(patsubst %.o,%.d,$(OBJECTS_REL_PATH))
 

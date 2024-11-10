@@ -2,6 +2,8 @@
 
 #include <errno.h>
 #include <limits.h>
+#include <signal.h>
+#include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,38 +11,75 @@
 
 #include "../array/array.h"
 
-static error_state input_handle(int* res, FILE* file, size_t lengh)
+static error_state Array_insert_wrapper(Array* array);
+static error_state Array_init_wrapper(Array* array);
+static error_state Array_remove_wrapper(Array* array);
+static error_state input_handle(int64_t* res, FILE* file, size_t lengh);
+
+error_state exec(Array* array)
 {
-    // char* buffer = NULL;
-    // int buff_size = 1024;
-    // int in_use = 0;
-    // int nbytes = 0;
+    lassert(array, "");
 
-    // if (!(buffer = malloc(buff_size * sizeof(char)))) {
-    //     report_error(ALLOC_ERROR, "");
-    // }
+    fprintf(stdout, "1. Init array with keyboard input\n"
+                    "2. Add element to index\n"
+                    "3. Remove element on index\n"
+                    "4. User func\n"
+                    "5. Print array\n"
+                    "6. Destroy array\n");
 
-    // while ((nbytes = fread(buffer + in_use, sizeof(char), buff_size - in_use, file))) {
-    //     if (nbytes < 0) {
-    //         report_error(INPUT_ERROR, "");
-    //     }
-    //     in_use += nbytes;
-    //     if (in_use >= lengh) {
-    //         report_error(INPUT_ERROR, "too lenghty input");
-    //     }
-    //     if (in_use >= buff_size) {
-    //         char* new_buffer;
-    //         if ((new_buffer = realloc(buffer, buff_size * 2)) == 0) {
-    //             report_error(ALLOC_ERROR, "");
-    //         }
-    //         buffer = new_buffer;
-    //     }
-    // }
+    fprintf(stdout, "Enter command: ");
+    int64_t mode = 0;
+    input_handle(&mode, stdin, 1);
+    int64_t val = 0;
+    int64_t idx = 0;
+    error_state result = OK;
+    switch (mode) {
+    case (1):
+        result = Array_init_wrapper(array);
+        Array_print(array);
+        break;
+    case (2):
+        result = Array_insert_wrapper(array);
+        Array_print(array);
+        break;
+    case (3):
+        result = Array_remove_wrapper(array);
+        Array_print(array);
+        break;
+    case (4):
+        val = 0;
+        result = Array_func(array, &val);
+        printf("%lld\n", val);
+        Array_print(array);
+        break;
+    case (5):
+        result = Array_print(array);
+        break;
+    case (6):
+        result = Array_kill(array);
+        break;
+    default:
+        // report_error(LOGIC_ERROR, "invalid input");
+        fprintf(stdout, "Wrong input. Try another one!\n\n");
+        break;
+    }
 
-    char buffer[8];
-    if ((fgets(buffer, sizeof(buffer), stdin)) < 0) {
+    return OK;
+}
+
+static error_state input_handle(int64_t* res, FILE* file, size_t length)
+{
+    char buffer[16];
+    if (feof(file)) {
+        // signal(SIGKILL, *signal handler*);
+        exit(EXIT_SUCCESS);
+    }
+    if (((fgets(buffer, sizeof(buffer), file)) < 0)) {
         report_error(INPUT_ERROR, "");
     }
+    // if (buffer[length] != '\n') {
+    //     report_error(INPUT_ERROR, "input is too long");
+    // }
 
     char* end_ptr = NULL;
     *res = strtoll(buffer, &end_ptr, 10);
@@ -50,73 +89,61 @@ static error_state input_handle(int* res, FILE* file, size_t lengh)
     return OK;
 }
 
-error_state exec(Array* array)
+static error_state Array_init_wrapper(Array* array)
 {
-    lassert(array, "");
-
-    fprintf(stdout, "1. Create(allocate) array\n"
-                    "2. Init array with keyboard input\n"
-                    "3. Add element to index\n"
-                    "4. Remove element on index\n"
-                    "5. User func\n"
-                    "6. Print array\n"
-                    "7. Destroy array\n");
-
-    fprintf(stdout, "Enter command: ");
-    int mode = 0;
-    input_handle(&mode, stdin, 1);
-    int val = 0;
-    int idx = 0;
-    switch (mode) {
-    case (1):
-        fprintf(stdout, "How many elements to init: ");
-        input_handle(&val, stdin, 1);
-
-        if (Array_create(array, val) == OK) {
-            fprintf(stdout, "\narray created\n\n");
-        }
-        break;
-    case (2):
-        fprintf(stdout, "How manny elements to init: ");
-        input_handle(&val, stdin, 8);
-
-        if (Array_init(array, val, input_handle) == OK) {
-            fprintf(stderr, "\narray init\n\n");
-        }
-        break;
-    case (3):
-        fprintf(stdout, "Index of insertion (1 indexed): ");
-        input_handle(&idx, stdin, 8);
-        fprintf(stdout, "Element to insert: ");
-        input_handle(&val, stdin, 8);
-        
-        if(Array_insert(array, val, idx - 1) == OK) {
-            fprintf(stderr, "elemets inserted");
-        }
-        break;
-    case (4):
-        fprintf(stdout, "Index of element to remove (1 indexed): ");
-        input_handle(&idx, stdin, 8);
-
-        if (Array_remove(array, idx - 1) == OK) {
-            fprintf(stderr, "element removed");
-        }
-        break;
-    case (5):
-        Array_func(array);
-        break;
-    case (6):
-        Array_print(array);
-        break;
-    case (7):
-        if (Array_kill(array) == OK) {
-            fprintf(stderr, "\narray killed\n\n");
-        }
-        break;
-    default:
-        report_error(LOGIC_ERROR, "invalid input");
-        break;
+    if (array->data) {
+        report_error(LOGIC_ERROR, "\narray already initialized\n\n");
     }
 
+    fprintf(stdout, "How manny elements to init: ");
+    int64_t idx, val;
+    input_handle(&idx, stdin, 8);
+    if (0ull > idx) {
+        report_error(LOGIC_ERROR, "bad amount");
+    }
+
+    for (size_t i = 0; i < idx; ++i) {
+        input_handle(&val, stdin, 8);
+        Array_insert(array, val, i);
+    }
+    return OK;
+}
+
+static error_state Array_insert_wrapper(Array* array)
+{
+    if (!array->data) {
+        report_error(LOGIC_ERROR, "\narray is not initialized\n\n");
+    }
+    fprintf(stdout, "Index of insertion (1 indexed): ");
+    int64_t idx, val;
+    input_handle(&idx, stdin, 8);
+    if (0ull > idx) {
+        report_error(LOGIC_ERROR, "index out of range");
+    }
+
+    fprintf(stdout, "Element to insert: ");
+    input_handle(&val, stdin, 8);
+
+    if (Array_insert(array, val, idx - 1) == OK) {
+        fprintf(stderr, "\nelemet inserted\n\n");
+    }
+    return OK;
+}
+
+static error_state Array_remove_wrapper(Array* array)
+{
+    if (!array->data) {
+        report_error(LOGIC_ERROR, "\narray is not initialized\n\n");
+    }
+    fprintf(stdout, "Index of element to remove (1 indexed): ");
+    int64_t idx;
+    input_handle(&idx, stdin, 8);
+    if (0ull > idx) {
+        report_error(LOGIC_ERROR, "index out of range");
+    }
+
+    if (Array_remove(array, idx - 1) == OK) {
+        fprintf(stderr, "\nelement removed\n\n");
+    }
     return OK;
 }

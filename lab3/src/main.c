@@ -7,7 +7,6 @@
 #include "exec/exec.h"
 
 
-
 int main(void)
 {
     log_create();
