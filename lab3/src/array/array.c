@@ -1,7 +1,6 @@
 #include "array.h"
 
 #include <assert.h>
-#include <ctype.h>
 #include <errno.h>
 #include <stdbool.h>
 #include <stddef.h>
@@ -39,7 +38,7 @@ error_state Array_remove(Array* array, size_t index)
 {
     lassert(array, "");
 
-    if ((size_t)0 > index || index >= array->size) {
+    if (index >= array->size) {
         report_error(LOGIC_ERROR, "index out of range");
     }
 
@@ -90,16 +89,16 @@ error_state Array_print(Array* array)
     return OK;
 }
 
-error_state Array_func(Array* heights, int64_t* max_area)
+error_state Array_func(Array* heights, int* max_area)
 {
     Array stack;
 
     stack.size = 0;
-    stack.data = malloc(0);
+    stack.data = NULL;
     *max_area = 0;
     Array_insert(&stack, -1, 0);
 
-    for (size_t i = 0; i <= heights->size; ++i) {
+    for (int i = 0; (size_t)i <= heights->size; ++i) {
         int height = i == heights->size ? 0 : heights->data[i];
         while ((stack.size > 0) && (height <= heights->data[stack.data[0]])) {
             int top = stack.data[0];

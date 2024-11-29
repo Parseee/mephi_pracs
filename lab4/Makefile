@@ -1,19 +1,14 @@
 .PHONY: all clean
 
-UNAME = $(shell uname -s)
-
-PROJECT_NAME = lab3
+PROJECT_NAME = onegin
 
 SRC_DIR = ./src
 BUILD_DIR = ./build
-CC = gcc
-ifeq ($(UNAME), Darwin)
-	CC = gcc-14
-endif
+CC = gcc-14
 
 DEBUG_ = 1
 
-CFLAGS =-Wall -Wextra -Waggressive-loop-optimizations \
+CFLAGS =-Wall -Wextra -Waggressive-loop-optimizations -g \
 		-Wmissing-declarations -Wcast-align -Wcast-qual -Wchar-subscripts \
 		-Wconversion -Wempty-body -Wfloat-equal \
 		-Wformat-nonliteral -Wformat-security -Wformat-signedness -Wformat=2 -Winline -Wlogical-op \
@@ -27,10 +22,10 @@ CFLAGS =-Wall -Wextra -Waggressive-loop-optimizations \
 		-fno-omit-frame-pointer -Wlarger-than=81920 -Wstack-usage=81920 \
 		-fPIE -Werror=vla
 
-SOURCES = main.c logger/logger.c array/array.c exec/exec.c
+SOURCES = main.c logger/logger.c text/text.c sort/sort.c
 SOURCES_REL_PATH = $(patsubst %.c,$(SRC_DIR)/%.c,$(SOURCES))
 
-DIRS = array logger exec
+DIRS = text logger sort
 BUILD_DIRS = $(DIRS:%=$(BUILD_DIR)/%)
 
 OBJECTS = $(patsubst %.c,%.o,$(SOURCES))
@@ -47,7 +42,7 @@ $(PROJECT_NAME).out: $(OBJECTS_REL_PATH)
 	@$(CC) $(CFLAGS) $^ -o $@
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c | $(BUILD_DIRS)
-	@$(CC) $(CFLAGS) -g -c $< -o $@
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 # -include $(patsubst %.o,%.d,$(OBJECTS_REL_PATH))
 
@@ -64,5 +59,3 @@ clean_log:
 
 clean_obj:
 	rm -rf ./build
-
-rebuild: clean build

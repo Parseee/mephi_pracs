@@ -18,7 +18,7 @@ typedef struct {
 
 error_state Array_insert(Array* array, int value, size_t index);
 error_state Array_remove(Array* array, size_t index);
-error_state Array_func(Array* array, int64_t* max_area);
+error_state Array_func(Array* array, int* max_area);
 error_state Array_print(Array* array);
 error_state Array_kill(Array* array);
 
