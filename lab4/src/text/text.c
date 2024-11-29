@@ -102,9 +102,9 @@ TEXT_ERROR Text_destruct(Text* text)
     }
 
     for (size_t i = 0; i < text->text_capacity; ++i) {
-        if (text->text[i]) {
+        //if (text->text[i]) {
             free(text->text[i]);
-        }
+        //}
     }
 
     text->text = NULL;

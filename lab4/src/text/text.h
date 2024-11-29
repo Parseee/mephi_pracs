@@ -2,6 +2,7 @@
 #define TEXT_H
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <readline/readline.h>
 #include <assert.h>
 

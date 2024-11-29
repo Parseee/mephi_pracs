@@ -5,7 +5,7 @@ PROJECT_NAME = lab4
 SRC_DIR = ./src
 BUILD_DIR = ./build
 INCLUDES = -lreadline
-CC = gcc
+CC = gcc-13.2
 ifeq ($(UNAME), Darwin)
 	CC = gcc-14
 endif
@@ -41,10 +41,10 @@ run:
 	@./$(PROJECT_NAME).out
 
 $(PROJECT_NAME).out: $(OBJECTS_REL_PATH)
-	@$(CC) $(CFLAGS) $(INCLUDES) $^ -o $@
+	@$(CC) $(CFLAGS) $^ -o $@ -lreadline 
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c | $(BUILD_DIRS)
-	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+	@$(CC) $(CFLAGS) -c $< -o $@ $(INCLUDES) -lreadline
 
 $(BUILD_DIRS):
 	@mkdir -p $@
