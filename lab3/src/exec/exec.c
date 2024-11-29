@@ -2,7 +2,6 @@
 
 #include <errno.h>
 #include <limits.h>
-#include <signal.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -74,9 +73,9 @@ static error_state input_handle(int* res, FILE* file, size_t length)
     if (((fgets(buffer, sizeof(buffer), file)) == NULL)) {
         report_error(INPUT_ERROR, "");
     }
-    if (strlen(buffer) > length) {
-        report_error(INPUT_ERROR, "");
-    }
+    //if (strlen(buffer) > length) {
+    //    report_error(INPUT_ERROR, "");
+    //}
 
 //    if (buffer[length] != '\n') {
 //         report_error(INPUT_ERROR, "input is too long");

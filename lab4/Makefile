@@ -1,12 +1,11 @@
 .PHONY: all clean
 
-PROJECT_NAME = onegin
+PROJECT_NAME = lab4
 
 SRC_DIR = ./src
 BUILD_DIR = ./build
+INCLUDES = -lreadline
 CC = gcc-14
-
-DEBUG_ = 1
 
 CFLAGS =-Wall -Wextra -Waggressive-loop-optimizations -g \
 		-Wmissing-declarations -Wcast-align -Wcast-qual -Wchar-subscripts \
@@ -22,10 +21,10 @@ CFLAGS =-Wall -Wextra -Waggressive-loop-optimizations -g \
 		-fno-omit-frame-pointer -Wlarger-than=81920 -Wstack-usage=81920 \
 		-fPIE -Werror=vla
 
-SOURCES = main.c logger/logger.c text/text.c sort/sort.c
+SOURCES = main.c text/text.c
 SOURCES_REL_PATH = $(patsubst %.c,$(SRC_DIR)/%.c,$(SOURCES))
 
-DIRS = text logger sort
+DIRS = text
 BUILD_DIRS = $(DIRS:%=$(BUILD_DIR)/%)
 
 OBJECTS = $(patsubst %.c,%.o,$(SOURCES))
@@ -39,12 +38,10 @@ run:
 	@./$(PROJECT_NAME).out
 
 $(PROJECT_NAME).out: $(OBJECTS_REL_PATH)
-	@$(CC) $(CFLAGS) $^ -o $@
+	@$(CC) $(CFLAGS) $(INCLUDES) $^ -o $@
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c | $(BUILD_DIRS)
-	@$(CC) $(CFLAGS) -c $< -o $@
-
-# -include $(patsubst %.o,%.d,$(OBJECTS_REL_PATH))
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 $(BUILD_DIRS):
 	@mkdir -p $@
