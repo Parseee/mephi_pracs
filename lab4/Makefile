@@ -5,7 +5,10 @@ PROJECT_NAME = lab4
 SRC_DIR = ./src
 BUILD_DIR = ./build
 INCLUDES = -lreadline
-CC = gcc-14
+CC = gcc
+ifeq ($(UNAME), Darwin)
+	CC = gcc-14
+endif
 
 CFLAGS =-Wall -Wextra -Waggressive-loop-optimizations -g \
 		-Wmissing-declarations -Wcast-align -Wcast-qual -Wchar-subscripts \
