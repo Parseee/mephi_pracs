@@ -13,11 +13,12 @@ TEXT_ERROR Text_create(Text* text)
 
     text->text_size = 0;
     text->text_capacity = DEFAULT_TEXT_SIZE;
-    text->text = (char**)malloc(sizeof(text->text) * DEFAULT_TEXT_SIZE);
+    text->text = (char**)malloc(sizeof(text->text) * text->text_capacity);
 
     char* input_line = NULL;
     while ((input_line = readline("")) != NULL) {
         if (Text_add_line_to_text(text, input_line)) {
+            free(input_line);
             Text_destruct(text);
             return TEXT_ALLOC_ERROR;
         }
