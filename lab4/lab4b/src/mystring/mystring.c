@@ -62,7 +62,7 @@ char* readline(const char* const format)
         return NULL;
     }
 
-    // line[read - 1] = '\0';
+    line[read - 1] = '\0';
 
     return line;
 }
