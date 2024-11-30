@@ -1,7 +1,8 @@
 #include "text.h"
 #include <stddef.h>
 #include <stdio.h>
-#include <string.h>
+// #include <string.h>
+
 
 #define DEFAULT_TEXT_SIZE 100
 
@@ -71,21 +72,22 @@ TEXT_ERROR Text_lengthify(Text* text) {
     }
 
     for (size_t i = 0; i < text->text_size; ++i) {
-        char* new_line = malloc(strlen(text->text[i]) * 2 * sizeof(text->text[i]));
+        char* new_line = malloc(str_len(text->text[i]) * 2 * sizeof(text->text[i]));
         char* end_ptr = new_line;
-        char* token = strtok(text->text[i], " ");
+        char* token = str_tok(text->text[i], " ");
 
         while (token != NULL) {
-            size_t len = strlen(token);
-            strcpy(end_ptr, token);
+            size_t len = str_len(token);
+            str_cpy(end_ptr, token);
             end_ptr += len;
 
             int cx = snprintf(end_ptr, 100, " %lu ", len);
             end_ptr += cx;
 
-            token = strtok(NULL, " ");
+            token = str_tok(NULL, " ");
         }
         *end_ptr = '\0';
+        *(end_ptr - 1) = '\0';
         free(text->text[i]);
         text->text[i] = new_line;
     }

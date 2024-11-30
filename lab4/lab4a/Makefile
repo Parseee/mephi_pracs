@@ -28,7 +28,7 @@ CFLAGS =-Wall -Wextra -Waggressive-loop-optimizations -g \
 SOURCES = main.c text/text.c
 SOURCES_REL_PATH = $(patsubst %.c,$(SRC_DIR)/%.c,$(SOURCES))
 
-DIRS = text_dep text_no_dep
+DIRS = text
 BUILD_DIRS = $(DIRS:%=$(BUILD_DIR)/%)
 
 OBJECTS = $(patsubst %.c,%.o,$(SOURCES))

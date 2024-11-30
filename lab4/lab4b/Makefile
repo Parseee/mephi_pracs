@@ -4,7 +4,7 @@ PROJECT_NAME = lab4
 
 SRC_DIR = ./src
 BUILD_DIR = ./build
-LIBS = -lreadline
+LIBS = 
 CC = gcc-13.2
 UNAME = $(shell uname -s)
 ifeq ($(UNAME), Darwin)
@@ -25,10 +25,10 @@ CFLAGS =-Wall -Wextra -Waggressive-loop-optimizations -g \
 		-fno-omit-frame-pointer -Wlarger-than=81920 -Wstack-usage=81920 \
 		-fPIE -Werror=vla
 
-SOURCES = main.c text/text.c
+SOURCES = main.c text/text.c mystring/mystring.c
 SOURCES_REL_PATH = $(patsubst %.c,$(SRC_DIR)/%.c,$(SOURCES))
 
-DIRS = text_dep text_no_dep
+DIRS = text mystring
 BUILD_DIRS = $(DIRS:%=$(BUILD_DIR)/%)
 
 OBJECTS = $(patsubst %.c,%.o,$(SOURCES))
