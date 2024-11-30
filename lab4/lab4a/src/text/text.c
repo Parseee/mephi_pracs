@@ -48,7 +48,8 @@ static TEXT_ERROR Text_add_line_to_text(Text* text, char* input_line)
     return TEXT_OK;
 }
 
-TEXT_ERROR Text_get_text(Text* text, FILE* file) {
+TEXT_ERROR Text_get_text(Text* text, FILE* file)
+{
     assert(text && "text is not init");
 
     if (!text->text) {
@@ -63,7 +64,8 @@ TEXT_ERROR Text_get_text(Text* text, FILE* file) {
     return TEXT_OK;
 }
 
-TEXT_ERROR Text_lengthify(Text* text) {
+TEXT_ERROR Text_lengthify(Text* text)
+{
     assert(text && "text is not init");
 
     if (!text->text) {
@@ -102,10 +104,10 @@ TEXT_ERROR Text_destruct(Text* text)
     }
 
     for (size_t i = 0; i < text->text_capacity; ++i) {
-        //if (text->text[i]) {
-            free(text->text[i]);
-        //}
+        free(text->text[i]);
     }
+
+    free(text->text);
 
     text->text = NULL;
     text->text_size = 0;
