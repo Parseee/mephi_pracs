@@ -4,8 +4,9 @@ PROJECT_NAME = lab4
 
 SRC_DIR = ./src
 BUILD_DIR = ./build
-INCLUDES = -lreadline
+LIBS = -lreadline
 CC = gcc-13.2
+UNAME = $(shell uname -s)
 ifeq ($(UNAME), Darwin)
 	CC = gcc-14
 endif
@@ -27,7 +28,7 @@ CFLAGS =-Wall -Wextra -Waggressive-loop-optimizations -g \
 SOURCES = main.c text/text.c
 SOURCES_REL_PATH = $(patsubst %.c,$(SRC_DIR)/%.c,$(SOURCES))
 
-DIRS = text
+DIRS = text_dep text_no_dep
 BUILD_DIRS = $(DIRS:%=$(BUILD_DIR)/%)
 
 OBJECTS = $(patsubst %.c,%.o,$(SOURCES))
@@ -41,10 +42,10 @@ run:
 	@./$(PROJECT_NAME).out
 
 $(PROJECT_NAME).out: $(OBJECTS_REL_PATH)
-	@$(CC) $(CFLAGS) $^ -o $@ -lreadline 
+	@$(CC) $(CFLAGS) $^ -o $@ $(LIBS)
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c | $(BUILD_DIRS)
-	@$(CC) $(CFLAGS) -c $< -o $@ $(INCLUDES) -lreadline
+	@$(CC) $(CFLAGS) -c $< -o $@ $(INCLUDES) $(LIBS)
 
 $(BUILD_DIRS):
 	@mkdir -p $@
@@ -59,3 +60,5 @@ clean_log:
 
 clean_obj:
 	rm -rf ./build
+
+rebuild: clean build
