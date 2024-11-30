@@ -12,7 +12,7 @@ int main(void)
     if (Text_create(&tx)) {
         Text_destruct(&tx);
         return EXIT_FAILURE;
-    } // how to track error properly here?
+    }
 
     Text_lengthify(&tx);
 
