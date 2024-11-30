@@ -58,6 +58,7 @@ char* readline(const char* const format)
     ssize_t read = 0;
 
     if ((read = getline(&line, &len, stdin)) == -1) {
+        free(line);
         return NULL;
     }
 
