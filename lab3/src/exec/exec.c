@@ -102,7 +102,7 @@ static error_state Array_init_wrapper(Array* array)
         report_error(LOGIC_ERROR, "bad amount");
     }
 
-    array->data = NULL;
+    array->data = malloc(0);
     array->size = 0;
 
     for (size_t i = 0; i < idx; ++i) {
