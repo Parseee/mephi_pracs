@@ -16,7 +16,7 @@ error_state Array_insert(Array* array, int value, size_t index)
     }
 
     int* new_data = NULL;
-    if (!(new_data = realloc(array->data, array->size + 1))) {
+    if (!(new_data = realloc(array->data, (array->size + 1) * sizeof(int)))) {
         free(array->data);
         array->size = 0;
         report_error(ALLOC_ERROR, "");
@@ -47,7 +47,7 @@ error_state Array_remove(Array* array, size_t index)
     }
 
     int* new_data = NULL;
-    if (!(new_data = realloc(array->data, array->size - 1))) {
+    if (!(new_data = realloc(array->data, (array->size - 1) * sizeof(int)))) {
         free(array->data);
         array->size = 0;
         report_error(ALLOC_ERROR, "");
