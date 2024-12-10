@@ -62,6 +62,14 @@ char* readline(const char* const format)
         return NULL;
     }
 
+    // size_t line_size = 256;
+
+
+    // if ((read = scanf("%s", line)) == 0) {
+    //     free(line);
+    //     return NULL;
+    // }
+
     line[read - 1] = '\0';
 
     return line;
