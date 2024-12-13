@@ -16,7 +16,8 @@ TEXT_ERROR Text_create(Text* text)
     text->text = (char**)malloc(sizeof(text->text) * text->text_capacity);
 
     char* input_line = NULL;
-    while ((input_line = readline("")) != NULL) {
+    FILE* f = fopen("Onegin.txt", "r+");
+    while ((input_line = freadline("", f)) != NULL) {
         if (Text_add_line_to_text(text, input_line)) {
             free(input_line);
             Text_destruct(text);
@@ -33,7 +34,7 @@ static TEXT_ERROR Text_add_line_to_text(Text* text, char* input_line)
 
     if (text->text_size + 1 >= text->text_capacity) {
         char** new_text = NULL;
-        if ((new_text = realloc(text->text, text->text_capacity * 2)) == NULL) {
+        if ((new_text = realloc(text->text, text->text_capacity * 2 * sizeof(text->text))) == NULL) {
             return TEXT_ALLOC_ERROR;
         }
 
@@ -74,7 +75,7 @@ TEXT_ERROR Text_lengthify(Text* text)
     }
 
     for (size_t i = 0; i < text->text_size; ++i) {
-        char* new_line = malloc(str_len(text->text[i]) * 2 * sizeof(text->text[i]));
+        char* new_line = malloc(str_len(text->text[i]) * 3 * sizeof(text->text[i]));
         char* end_ptr = new_line;
         char* token = str_tok(text->text[i], " ");
 
@@ -89,9 +90,10 @@ TEXT_ERROR Text_lengthify(Text* text)
             token = str_tok(NULL, " ");
         }
         *end_ptr = '\0';
-        *(end_ptr - 1) = '\0';
+        // *(end_ptr - 1) = '\0';
         free(text->text[i]);
         text->text[i] = new_line;
+        new_line = NULL;
     }
 
     return TEXT_OK;

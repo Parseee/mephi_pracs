@@ -2,6 +2,7 @@
 #include <memory.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "mystring.h"
 
@@ -50,29 +51,35 @@ static char* occurs(char* src, const char* const pat)
     return ptr == src ? NULL : ptr;
 }
 
-char* readline(const char* const format)
+char* freadline(const char* const format, FILE* f)
 {
     assert(format && "format is empty");
     char* line = NULL;
     size_t len = 0;
     ssize_t read = 0;
 
-    if ((read = getline(&line, &len, stdin)) == -1) {
-        free(line);
+    if ((read = get_line(&line, &len, f)) == -1) {
+        if (line != NULL) {
+            free(line);
+        }
         return NULL;
     }
 
     // size_t line_size = 256;
-
 
     // if ((read = scanf("%s", line)) == 0) {
     //     free(line);
     //     return NULL;
     // }
 
-    line[read - 1] = '\0';
+    line[read] = '\0';
 
     return line;
+}
+
+ssize_t get_line(char** string, size_t* len, FILE* stream) {
+    size_t written = 0;
+    return written;
 }
 
 char* str_tok(char* src, const char* const pattern)
@@ -114,10 +121,15 @@ size_t str_len(const char* const src)
     return len;
 }
 
-char* str_cpy(char* dest, const char* const src)
+char* str_cpy(char* dest, const char* src)
 {
     assert(src && "src is not init");
     assert(dest && "dest is not init");
 
-    return memcpy(dest, src, strlen(src) * sizeof(src));
+    char* saved = dest;
+    while (*src) {
+        *dest++ = *src++;
+    }
+    *dest = 0;
+    return saved;
 }
