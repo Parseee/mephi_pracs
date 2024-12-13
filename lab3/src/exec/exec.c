@@ -73,6 +73,13 @@ static error_state input_handle(int* res, FILE* file, size_t length)
     if (((fgets(buffer, sizeof(buffer), file)) == NULL)) {
         report_error(INPUT_ERROR, "");
     }
+    //if (strlen(buffer) > length) {
+    //    report_error(INPUT_ERROR, "");
+    //}
+
+//    if (buffer[length] != '\n') {
+//         report_error(INPUT_ERROR, "input is too long");
+//    }
 
     char* end_ptr = NULL;
     *res = strtoll(buffer, &end_ptr, 10);
@@ -95,7 +102,7 @@ static error_state Array_init_wrapper(Array* array)
         report_error(LOGIC_ERROR, "bad amount");
     }
 
-    array->data = NULL;
+    array->data = malloc(0);
     array->size = 0;
 
     for (size_t i = 0; i < idx; ++i) {
