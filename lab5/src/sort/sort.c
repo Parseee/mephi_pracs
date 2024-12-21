@@ -3,6 +3,7 @@
 #include <ctype.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 bool is_sorted(void* array, size_t array_size, size_t size,
     bool (*compare)(const void*, const void*))
@@ -63,18 +64,50 @@ void swap(void* ptr1, void* ptr2, size_t size)
     return;
 }
 
-sorted_state Text_sort(DB* text)
+void bubble_sort(void* array, size_t array_size, size_t size, bool (*compare)(const void* l, const void* r))
 {
-    assert(text && "");
-
-    for (size_t i = 0; i < text->size; ++i) {
-        for (size_t j = i + 1; j < text->size; ++j) {
+    for (size_t i = 0; i < array_size; ++i) {
+        for (size_t j = i + 1; j < array_size; ++j) {
             // fprintf(stderr, "%s, %s\n", text->text[i], text->text[j]);
-            if (!Text_strcmp((char*)text->data + i * sizeof(char*), (void*)text->data + j * sizeof(char*))) {
-                swap((char*)text->data + i * sizeof(char*), (void*)text->data + j * sizeof(char*), sizeof(text->data));
+            if (!compare(array + (i * size), array + (j * size))) {
+                swap(array + (i * size), array + (j * size), size);
             }
         }
     }
 
-    return OK;
+    return;
+}
+
+static size_t partition(void *array, size_t l, size_t r, size_t array_size, size_t size, bool (*compare)(const void *, const void *)) {
+    void* v = array + ((l + r) / 2) * size;
+    size_t i = l;
+    size_t j = r;
+
+    while (i < j) {
+        while (compare(array + i * size, v) && i + 1 < array_size) {
+            ++i;
+        }
+        while (compare(v, array + j * size) && j < array_size) {
+            --j;
+        }
+        if (i >= j) break;
+        swap(array + (i++) * size, array + (j--) * size, size);
+    }
+    return j;
+}
+
+static void _q_sort(void *array, size_t l, size_t r , size_t array_size, size_t size, bool (*compare)(const void *, const void *)) {
+    if (array == NULL) {
+        return;
+    }
+
+    if (l < r) {
+        size_t pivot = partition(array, l, r, array_size, size, compare);
+        _q_sort(array, l, pivot, array_size, size, compare);
+        _q_sort(array, pivot, r, array_size, size, compare);
+    }
+}
+
+void q_sort(void *array, size_t array_size, size_t size, bool (*compare)(const void *, const void *)) {
+    _q_sort(array, 0, array_size - 1, array_size, size, compare);
 }

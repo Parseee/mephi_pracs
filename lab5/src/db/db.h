@@ -12,7 +12,7 @@ typedef enum DB_state { DB_OK,
 
 typedef struct Item {
     char* name;
-    char id[8];
+    char* id;
     time_t time;
 } Item;
 

@@ -25,6 +25,10 @@ DB_state DB_destruct(DB* db)
     if (!db->data) {
         report_error("database is not init", DB_INTERNAL_ERROR);
     }
+    for (size_t i = 0; i < db->size; ++i) {
+        free(db->data[i]->name);
+        free(db->data[i]->id);
+    }
     free(db->data);
     db->data = NULL;
     db->size = 0;

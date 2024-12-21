@@ -28,10 +28,10 @@ SANITIZER = -fsanitize=address,alignment,bool,bounds,enum,float-cast-overflow,fl
 		integer-divide-by-zero,leak,nonnull-attribute,null,object-size,return,returns-nonnull-attribute,$\
 		shift,signed-integer-overflow,undefined,unreachable,vla-bound,vptr
 
-SOURCES = main.c db/db.c io_kit/io_kit.c
+SOURCES = main.c db/db.c io_kit/io_kit.c sort/sort.c
 SOURCES_REL_PATH = $(patsubst %.c,$(SRC_DIR)/%.c,$(SOURCES))
 
-DIRS = db io_kit 
+DIRS = db io_kit sort
 BUILD_DIRS = $(DIRS:%=$(BUILD_DIR)/%)
 
 OBJECTS = $(patsubst %.c,%.o,$(SOURCES))

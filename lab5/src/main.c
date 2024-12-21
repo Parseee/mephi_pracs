@@ -2,63 +2,127 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <unistd.h>
 
-// #include "sort/sort.h"
 #include "db/db.h"
 #include "io_kit/io_kit.h"
+#include "sort/sort.h"
 
-int foo()
+typedef enum { QSORT,
+    BUBBLE,
+    SHELL,
+    COCK_TAIL } sorting;
+typedef enum { NAME,
+    ID,
+    TIME } compare;
+
+bool name_cmp(const void* l, const void* r)
 {
-    // sry for this POSIX regex sucks ass
-    const char* pattern = "^([[:alpha:]]*[[:space:]][[:alpha:]]*[[:space:]][[:alpha:]]*[[:space:]])([[:digit:]]{2}[[:upper:]]{2}-[[:upper:]]{4})([[:space:]][[:digit:]]*)$";
-
-    // Compile the regex
-    regex_t match;
-    regmatch_t pmatch[4];
-    int rc = regcomp(&match, pattern, REG_EXTENDED);
-    if (rc) {
-        fprintf(stderr, "Regex compilation failed\n");
-        return 1;
-    }
-
-    char str[] = "razdvatri sosi hui 13ZV-ZXCV 2286661337";
-    rc = regexec(&match, str, 4, pmatch, 0);
-
-    if (rc == 0) {
-        printf("Match found\n");
-        // ssize_t len = pmatch[0].rm_eo - pmatch[0].rm_so;
-        fprintf(stderr, "%s\n", str + pmatch[3].rm_so);
-    } else if (rc == REG_NOMATCH) {
-        printf("No match\n");
-    } else {
-        // regerror(rc, &match, NULL, 0);
-        printf("Regex error\n");
-    }
-
-    return 0;
+    return strlen(l) > strlen(r);
 }
 
-int main(void)
+int main(int argc, char* argv[])
 {
-    // Text tx = (Text) { .data = NULL, .text = NULL, .data_size = 0 };
-    // Text_create(&tx, "Onegin.txt");
+    DB db = (DB) { .capacity = 0, .data = NULL, .size = 0 };
+    DB_create(&db);
 
-    // fprintf(stderr, is_sorted(tx.text, tx.text_size, sizeof(*tx.text), Text_strcmp) ? "Sorted\n" : "Not sorted\n");
+    char* input_filename = NULL;
+    char* output_filename = NULL;
+    bool binary = false;
+    sorting srt = QSORT;
+    compare cmp = NAME;
 
-    // if (Text_sort(&tx)) {
-    //     return EXIT_FAILURE;
+    int c = 0;
+    while ((c = getopt(argc, argv, "i:o:s:c:b")) != -1) {
+        switch (c) {
+        case ('b'):
+            binary = true;
+            break;
+
+        case ('i'):
+            input_filename = strdup(optarg);
+            break;
+
+        case ('o'):
+            output_filename = strdup(optarg);
+            break;
+
+        case ('s'):
+            if (strcmp(optarg, "bubble")) {
+                srt = BUBBLE;
+            } else if (strcmp(optarg, "shaker")) {
+                srt = COCK_TAIL;
+            } else if (strcmp(optarg, "shell")) {
+                srt = SHELL;
+            } else if (strcmp(optarg, "qsort")) {
+                srt = QSORT;
+            } else {
+                printf("sorting provided is govno\n");
+                exit(0);
+            }
+
+            break;
+
+        case ('c'):
+            if (strcmp(optarg, "name")) {
+                cmp = NAME;
+            } else if (strcmp(optarg, "id")) {
+                cmp = ID;
+            } else if (strcmp(optarg, "time")) {
+                cmp = TIME;
+            } else {
+                printf("comparator provided is govno\n");
+                exit(0);
+            }
+
+            break;
+
+        default:
+            printf("dolboyob\n");
+            exit(0);
+        }
+    }
+
+    if (binary) {
+        if (input_filename) {
+            IO_binary_input(&db, input_filename);
+            free(input_filename);
+        } else {
+            IO_terminal_input(&db);
+        }
+    } else {
+        if (input_filename) {
+            IO_text_input(&db, input_filename);
+            free(input_filename);
+        } else {
+            IO_terminal_input(&db);
+        }
+    }
+
+    // if (srt == QSORT) {
+    //     q_sort(db.data, db.size, sizeof(db.data), name_cmp);
     // }
+    bubble_sort(db.data, db.size, sizeof(db.data), name_cmp);
 
-    // for (size_t i = 0; i < tx.text_size; ++i) {
-    //     fprintf(stderr, "%s\n", tx.text[i]);
-    // }
+    if (binary) {
+        if (output_filename) {
+            IO_binary_output(&db, output_filename);
+            free(output_filename);
+        } else {
+            IO_terminal_output(&db);
+        }
+    } else {
+        if (output_filename) {
+            IO_text_output(&db, output_filename);
+            free(output_filename);
+        } else {
+            IO_terminal_output(&db);
+        }
+    }
 
-    // Text_kill(&tx);
-
-    Item* item = NULL;
-    // construct_item(item, "acb abg iiif");
-
-    foo();
+    DB_destruct(&db);
 
     return EXIT_SUCCESS;
 }
