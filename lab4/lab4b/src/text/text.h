@@ -7,7 +7,7 @@
 
 #include "../mystring/mystring.h"
 
-typedef enum { TEXT_OK = 0, TEXT_INPUT_ERROR, TEXT_ALLOC_ERROR, TEXT_NOT_SET_ERROR } TEXT_ERROR;
+typedef enum { TEXT_OK = 0, TEXT_INPUT_ERROR, TEXT_ALLOC_ERROR, TEXT_NOT_SET_ERROR, TEXT_INTERNAL_ERROR } TEXT_ERROR;
 
 typedef struct Text {
     char** text;

@@ -62,10 +62,17 @@ TEXT_ERROR Text_get_text(Text* text, FILE* file)
         return TEXT_NOT_SET_ERROR;
     }
 
+    file = fopen("GOVNO.txt", "w+");
+    if (!file) {
+        fprintf(stderr, "govno govno");
+        return TEXT_INTERNAL_ERROR;
+    }
     fprintf(file, "\n");
     for (size_t i = 0; i < text->text_size; ++i) {
         fprintf(file, "%s\n", text->text[i]);
     }
+
+    fclose(file);
 
     return TEXT_OK;
 }
