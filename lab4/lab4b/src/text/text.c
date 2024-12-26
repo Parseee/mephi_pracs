@@ -78,7 +78,7 @@ TEXT_ERROR Text_lengthify(Text* text)
     }
 
     for (size_t i = 0; i < text->text_size; ++i) {
-        char* new_line = malloc((str_len(text->text[i]) + NULSIZE) * 3 * sizeof(text->text[i]));
+        char* new_line = calloc((str_len(text->text[i]) + NULSIZE) * 3, sizeof(text->text[i]));
         char* end_ptr = new_line;
         char* token = str_tok(text->text[i], " \n\0");
 
