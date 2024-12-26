@@ -27,6 +27,7 @@ TEXT_ERROR Text_create(Text* text)
         }
         // fprintf(stderr, "line %lu read with it's contents: \"%s\"\n", text->text_size, text->text[text->text_size - 1]);
     }
+    fclose(f);
     return TEXT_OK;
 }
 
