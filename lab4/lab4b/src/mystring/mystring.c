@@ -72,14 +72,54 @@ char* freadline(const char* const format, FILE* f)
     //     return NULL;
     // }
 
-    line[read] = '\0';
+    // line[read] = '\0';
 
     return line;
 }
 
 ssize_t get_line(char** string, size_t* len, FILE* stream) {
-    size_t written = 0;
-    return written;
+    assert(string);
+    assert(string);
+
+    size_t size = 0;
+    size_t cap = 1000;
+    char* chunk = calloc(cap, sizeof(*chunk));
+    *string = calloc(cap, sizeof(**string));
+    char* eptr = *string;
+    ssize_t read = 0;
+
+    do {
+        read = fscanf(stream, "%999[^\n]", chunk);
+        if (read < 0) {
+            return -1;
+        } else if (read == 0) {
+            fscanf(stream, "%*c");
+        }
+
+        ssize_t chunk_len = strlen(chunk) + 1;
+        if (chunk_len + size > cap) {
+            char* new_string = realloc(*string, cap * 2 * sizeof(*new_string));
+            if (!new_string) {
+                free(chunk);
+                free(string);
+                return -1;
+            }
+            *string = new_string;
+            cap *= 2;
+            eptr = *string + str_len(*string);
+        }
+        str_cpy(eptr, chunk);
+        eptr += chunk_len;
+        size += chunk_len;
+    } while (read);
+
+    if (size > 0) {
+        *eptr = '\0';
+    } else {
+        *string = realloc(*string, 1 * sizeof(**string));
+    }
+    
+    return size;
 }
 
 char* str_tok(char* src, const char* const pattern)

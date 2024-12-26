@@ -104,7 +104,7 @@ int main(int argc, char* argv[])
     // if (srt == QSORT) {
     //     q_sort(db.data, db.size, sizeof(db.data), name_cmp);
     // }
-    bubble_sort(db.data, db.size, sizeof(db.data), name_cmp);
+    // bubble_sort(db.data, db.size, sizeof(db.data), name_cmp);
 
     if (binary) {
         if (output_filename) {

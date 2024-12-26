@@ -4,6 +4,7 @@
 #include <string.h>
 
 #define DEFAULT_TEXT_SIZE 100
+#define NULSIZE 1
 
 static TEXT_ERROR Text_add_line_to_text(Text* text, char* input_line);
 
@@ -16,12 +17,16 @@ TEXT_ERROR Text_create(Text* text)
     text->text = (char**)malloc(sizeof(text->text) * DEFAULT_TEXT_SIZE);
 
     char* input_line = NULL;
+    stdin = fopen("Onegin.txt", "r+");
+    if (!stdin) {
+        fprintf(stderr, "bad fd");
+        return TEXT_INPUT_ERROR;
+    }
     while ((input_line = readline("")) != NULL) {
         if (Text_add_line_to_text(text, input_line)) {
             Text_destruct(text);
             return TEXT_ALLOC_ERROR;
         }
-        // fprintf(stderr, "line %lu read with it's contents: \"%s\"\n", text->text_size, text->text[text->text_size - 1]);
     }
     return TEXT_OK;
 }
@@ -32,7 +37,7 @@ static TEXT_ERROR Text_add_line_to_text(Text* text, char* input_line)
 
     if (text->text_size + 1 >= text->text_capacity) {
         char** new_text = NULL;
-        if ((new_text = realloc(text->text, text->text_capacity * 2)) == NULL) {
+        if ((new_text = realloc(text->text, text->text_capacity * 2 * sizeof(text->text))) == NULL) {
             return TEXT_ALLOC_ERROR;
         }
 
@@ -73,9 +78,10 @@ TEXT_ERROR Text_lengthify(Text* text)
     }
 
     for (size_t i = 0; i < text->text_size; ++i) {
-        char* new_line = malloc(strlen(text->text[i]) * 2 * sizeof(text->text[i]));
+        char* new_line = malloc((strlen(text->text[i]) + NULSIZE) * 3 * sizeof(text->text[i]));
         char* end_ptr = new_line;
-        char* token = strtok(text->text[i], " ");
+        char* str = strdup(text->text[i]);
+        char* token = strtok(str, " ");
 
         while (token != NULL) {
             size_t len = strlen(token);

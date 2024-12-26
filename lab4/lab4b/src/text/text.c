@@ -4,6 +4,7 @@
 // #include <string.h>
 
 #define DEFAULT_TEXT_SIZE 100
+#define NULSIZE 1
 
 static TEXT_ERROR Text_add_line_to_text(Text* text, char* input_line);
 
@@ -17,6 +18,7 @@ TEXT_ERROR Text_create(Text* text)
 
     char* input_line = NULL;
     FILE* f = fopen("Onegin.txt", "r+");
+    // FILE* f = stdin;
     while ((input_line = freadline("", f)) != NULL) {
         if (Text_add_line_to_text(text, input_line)) {
             free(input_line);
@@ -44,7 +46,7 @@ static TEXT_ERROR Text_add_line_to_text(Text* text, char* input_line)
     }
 
     text->text[text->text_size] = input_line;
-    text->text_size += 1;
+    text->text_size += NULSIZE;
     input_line = NULL;
 
     return TEXT_OK;
@@ -75,7 +77,7 @@ TEXT_ERROR Text_lengthify(Text* text)
     }
 
     for (size_t i = 0; i < text->text_size; ++i) {
-        char* new_line = malloc(str_len(text->text[i]) * 3 * sizeof(text->text[i]));
+        char* new_line = malloc((str_len(text->text[i]) + NULSIZE) * 3 * sizeof(text->text[i]));
         char* end_ptr = new_line;
         char* token = str_tok(text->text[i], " ");
 
@@ -90,7 +92,6 @@ TEXT_ERROR Text_lengthify(Text* text)
             token = str_tok(NULL, " ");
         }
         *end_ptr = '\0';
-        // *(end_ptr - 1) = '\0';
         free(text->text[i]);
         text->text[i] = new_line;
         new_line = NULL;
