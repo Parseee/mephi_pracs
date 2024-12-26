@@ -14,7 +14,7 @@ TEXT_ERROR Text_create(Text* text)
 
     text->text_size = 0;
     text->text_capacity = DEFAULT_TEXT_SIZE;
-    text->text = (char**)malloc(sizeof(text->text) * text->text_capacity);
+    text->text = calloc(text->text_capacity, sizeof(text->text));
 
     char* input_line = NULL;
     FILE* f = fopen("Onegin.txt", "r+");
@@ -110,7 +110,9 @@ TEXT_ERROR Text_destruct(Text* text)
     }
 
     for (size_t i = 0; i < text->text_capacity; ++i) {
-        free(text->text[i]);
+        if (text->text[i]) {
+            free(text->text[i]);
+        }
     }
 
     free(text->text);
