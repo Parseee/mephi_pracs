@@ -14,7 +14,7 @@ TEXT_ERROR Text_create(Text* text)
 
     text->text_size = 0;
     text->text_capacity = DEFAULT_TEXT_SIZE;
-    text->text = (char**)malloc(sizeof(text->text) * DEFAULT_TEXT_SIZE);
+    text->text = calloc(DEFAULT_TEXT_SIZE, sizeof(*text->text));
 
     char* input_line = NULL;
     stdin = fopen("Onegin.txt", "r+");
@@ -28,6 +28,9 @@ TEXT_ERROR Text_create(Text* text)
             return TEXT_ALLOC_ERROR;
         }
     }
+
+    fclose(stdin);
+    stdin = 0;
     return TEXT_OK;
 }
 
@@ -78,10 +81,9 @@ TEXT_ERROR Text_lengthify(Text* text)
     }
 
     for (size_t i = 0; i < text->text_size; ++i) {
-        char* new_line = malloc((strlen(text->text[i]) + NULSIZE) * 3 * sizeof(text->text[i]));
+        char* new_line = calloc((strlen(text->text[i]) + NULSIZE) * 3, sizeof(text->text[i]));
         char* end_ptr = new_line;
-        char* str = strdup(text->text[i]);
-        char* token = strtok(str, " ");
+        char* token = strtok(new_line, " ");
 
         while (token != NULL) {
             size_t len = strlen(token);
@@ -93,6 +95,7 @@ TEXT_ERROR Text_lengthify(Text* text)
 
             token = strtok(NULL, " ");
         }
+
         *end_ptr = '\0';
         free(text->text[i]);
         text->text[i] = new_line;
