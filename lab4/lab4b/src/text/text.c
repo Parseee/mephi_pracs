@@ -43,8 +43,11 @@ static TEXT_ERROR Text_add_line_to_text(Text* text, char* input_line)
         }
 
         text->text = new_text;
-        new_text = NULL;
         text->text_capacity *= 2;
+        new_text = NULL;
+        for (int i = text->text_size; i < text->text_capacity; ++i) {
+            text->text[i] = NULL;
+        }
     }
 
     text->text[text->text_size] = input_line;
@@ -113,9 +116,9 @@ TEXT_ERROR Text_destruct(Text* text)
 {
     assert(text && "text is not init");
 
-    // if (text->text == NULL && text->text_capacity == 0 && text->text_size == 0) {
-    //     return TEXT_OK;
-    // }
+    if (text->text == NULL && text->text_capacity == 0 && text->text_size == 0) {
+        return TEXT_OK;
+    }
 
     for (size_t i = 0; i < text->text_capacity; ++i) {
         if (text->text[i]) {
