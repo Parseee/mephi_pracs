@@ -112,6 +112,7 @@ TEXT_ERROR Text_lengthify(Text* text)
     return TEXT_OK;
 }
 
+
 TEXT_ERROR Text_destruct(Text* text)
 {
     assert(text && "text is not init");
