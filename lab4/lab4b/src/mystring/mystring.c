@@ -109,6 +109,8 @@ ssize_t get_line(char** string, size_t* len, FILE* stream) {
     } else {
         *string = realloc(*string, 1 * sizeof(**string));
     }
+
+    free(chunk);
     
     return size;
 }
