@@ -5,7 +5,6 @@
 
 #include "text/text.h"
 
-
 int main(void)
 {
 
@@ -19,7 +18,9 @@ int main(void)
 
     Text_lengthify(&tx);
 
-    Text_get_text(&tx, stdout);
+    FILE* fd = fopen("GOVNO.txt", "w+");
+    Text_get_text(&tx, fd);
+    fclose(fd);
 
     Text_destruct(&tx);
 

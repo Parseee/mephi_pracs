@@ -17,6 +17,7 @@ TEXT_ERROR Text_create(Text* text)
     text->text = calloc(DEFAULT_TEXT_SIZE, sizeof(*text->text));
 
     char* input_line = NULL;
+    FILE* tmp = stdin;
     stdin = fopen("Onegin.txt", "r+");
     if (!stdin) {
         fprintf(stderr, "bad fd");
@@ -30,7 +31,7 @@ TEXT_ERROR Text_create(Text* text)
     }
 
     fclose(stdin);
-    stdin = 0;
+    stdin = tmp;
     return TEXT_OK;
 }
 
@@ -83,7 +84,7 @@ TEXT_ERROR Text_lengthify(Text* text)
     for (size_t i = 0; i < text->text_size; ++i) {
         char* new_line = calloc((strlen(text->text[i]) + NULSIZE) * 3, sizeof(text->text[i]));
         char* end_ptr = new_line;
-        char* token = strtok(new_line, " ");
+        char* token = strtok(text->text[i], " \n\0");
 
         while (token != NULL) {
             size_t len = strlen(token);
@@ -93,12 +94,12 @@ TEXT_ERROR Text_lengthify(Text* text)
             int cx = snprintf(end_ptr, 100, " %lu ", len);
             end_ptr += cx;
 
-            token = strtok(NULL, " ");
+            token = strtok(NULL, " \n\0");
         }
-
         *end_ptr = '\0';
         free(text->text[i]);
         text->text[i] = new_line;
+        new_line = NULL;
     }
 
     return TEXT_OK;
