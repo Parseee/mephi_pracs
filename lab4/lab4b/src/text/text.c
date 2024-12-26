@@ -37,6 +37,7 @@ static TEXT_ERROR Text_add_line_to_text(Text* text, char* input_line)
     if (text->text_size + 1 >= text->text_capacity) {
         char** new_text = NULL;
         if ((new_text = realloc(text->text, text->text_capacity * 2 * sizeof(text->text))) == NULL) {
+            Text_destruct(text);
             return TEXT_ALLOC_ERROR;
         }
 
@@ -46,7 +47,7 @@ static TEXT_ERROR Text_add_line_to_text(Text* text, char* input_line)
     }
 
     text->text[text->text_size] = input_line;
-    text->text_size += NULSIZE;
+    text->text_size += 1;
     input_line = NULL;
 
     return TEXT_OK;
