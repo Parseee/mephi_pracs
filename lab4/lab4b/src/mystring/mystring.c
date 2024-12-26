@@ -74,13 +74,14 @@ ssize_t get_line(char** string, size_t* len, FILE* stream) {
     size_t size = 0;
     size_t cap = 1488;
     char* chunk = calloc(cap, sizeof(*chunk));
-    *string = calloc(1337, sizeof(**string));
+    *string = calloc(cap, sizeof(**string));
     char* eptr = *string;
     ssize_t read = 0;
 
     do {
         read = fscanf(stream, "%999[^\n]", chunk);
         if (read < 0) {
+            free(chunk);
             return -1;
         } else if (read == 0) {
             fscanf(stream, "%*c");
