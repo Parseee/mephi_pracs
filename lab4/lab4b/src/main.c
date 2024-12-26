@@ -17,8 +17,8 @@ int main(void)
     } // how to track error properly here?
 
     Text_lengthify(&tx);
-
     Text_get_text(&tx, stdout);
+
 
     Text_destruct(&tx);
 

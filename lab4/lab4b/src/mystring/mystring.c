@@ -65,20 +65,10 @@ char* freadline(const char* const format, FILE* f)
         return NULL;
     }
 
-    // size_t line_size = 256;
-
-    // if ((read = scanf("%s", line)) == 0) {
-    //     free(line);
-    //     return NULL;
-    // }
-
-    // line[read] = '\0';
-
     return line;
 }
 
 ssize_t get_line(char** string, size_t* len, FILE* stream) {
-    assert(string);
     assert(string);
 
     size_t size = 0;
@@ -94,6 +84,7 @@ ssize_t get_line(char** string, size_t* len, FILE* stream) {
             return -1;
         } else if (read == 0) {
             fscanf(stream, "%*c");
+            continue;
         }
 
         ssize_t chunk_len = strlen(chunk) + 1;

@@ -79,7 +79,7 @@ TEXT_ERROR Text_lengthify(Text* text)
     for (size_t i = 0; i < text->text_size; ++i) {
         char* new_line = malloc((str_len(text->text[i]) + NULSIZE) * 3 * sizeof(text->text[i]));
         char* end_ptr = new_line;
-        char* token = str_tok(text->text[i], " ");
+        char* token = str_tok(text->text[i], " \n\0");
 
         while (token != NULL) {
             size_t len = str_len(token);
@@ -89,7 +89,7 @@ TEXT_ERROR Text_lengthify(Text* text)
             int cx = snprintf(end_ptr, 100, " %lu ", len);
             end_ptr += cx;
 
-            token = str_tok(NULL, " ");
+            token = str_tok(NULL, " \n\0");
         }
         *end_ptr = '\0';
         free(text->text[i]);
