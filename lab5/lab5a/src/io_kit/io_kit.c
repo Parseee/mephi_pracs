@@ -27,6 +27,10 @@ IO_state IO_terminal_input(DB* db)
         }
     }
 
+    if (line) {
+        free(line);
+    }
+
     return IO_OK;
 }
 
