@@ -274,9 +274,11 @@ IO_state IO_generate_input(DB* db, ssize_t quantity, ssize_t length)
     srand(time(NULL));
     for (int i = 0; i < quantity; ++i) {
         Item* it = calloc(1, sizeof(*it));
-        if (construct_item(&it, random_line(length))) {
+        char* line = random_line(length);
+        if (construct_item(&it, line)) {
             fprintf(stderr, "can't create item. tryin another one\n");
         }
+        free(line);
         DB_append(db, it);
     }
     return IO_OK;
