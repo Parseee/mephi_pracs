@@ -27,6 +27,10 @@ IO_state IO_terminal_input(DB* db)
         }
     }
 
+    if (line) {
+        free(line);
+    }
+
     return IO_OK;
 }
 
@@ -51,6 +55,10 @@ IO_state IO_text_input(DB* db, const char* const filename)
         } else {
             DB_append(db, new_item);
         }
+    }
+
+    if (line) {
+        free(line);
     }
 
     fclose(fd);
@@ -91,6 +99,10 @@ IO_state IO_binary_input(DB* db, const char* const filename)
         line = strtok(NULL, "\n");
     }
 
+    if (buf) {
+        free(buf);
+    }
+
     fclose(fd);
 
     return IO_OK;
@@ -98,7 +110,6 @@ IO_state IO_binary_input(DB* db, const char* const filename)
 
 static IO_state construct_item(Item** item, char* str)
 {
-
     regex_t name;
     int reg_i = 0;
     // sry for regex POSIX sucks ass
@@ -109,6 +120,7 @@ static IO_state construct_item(Item** item, char* str)
         char msgbuf[256];
         regerror(reg_i, &name, msgbuf, sizeof(msgbuf));
         report_error(msgbuf, IO_INTERNAL_ERROR);
+        return IO_INTERNAL_ERROR;
     }
 
     reg_i = regexec(&name, str, 4, pmatch, 0);
@@ -127,10 +139,14 @@ static IO_state construct_item(Item** item, char* str)
         }
         (*item)->id[pmatch[2].rm_eo - pmatch[2].rm_so + 1] = '\0';
 
-        char* eptr = NULL;
-        (*item)->time = strtoll(str + pmatch[3].rm_so, &eptr, 10);
+        (*item)->time = strtoll(str + pmatch[3].rm_so, NULL, 10);
         if (errno == ERANGE) {
             report_error("time overflow", IO_INTERNAL_ERROR);
+            free((*item)->name);
+            free((*item)->id);
+            free(*item);
+            regfree(&name);
+            return IO_INTERNAL_ERROR;
         }
     } else if (reg_i == REG_NOMATCH) {
         item = NULL;
@@ -140,6 +156,7 @@ static IO_state construct_item(Item** item, char* str)
         report_error(msgbuf, IO_INTERNAL_ERROR);
     }
 
+    regfree(&name);
     return IO_OK;
 }
 
@@ -216,7 +233,8 @@ IO_state IO_binary_output(DB* db, const char* const filename)
     return IO_OK;
 }
 
-static char* random_line(ssize_t len) {
+static char* random_line(ssize_t len)
+{
     char* line = calloc(len + 1 + 8 + 1 + 18, sizeof(*line));
     char* eptr = line;
     ssize_t name_len = rand() % (len / 3) + 1;
@@ -239,11 +257,6 @@ static char* random_line(ssize_t len) {
     *(eptr++) = rand() % 10 + '0';
     *(eptr++) = rand() % ('Z' - 'A') + 'A';
     *(eptr++) = rand() % ('Z' - 'A') + 'A';
-    *(eptr++) = '-';
-    *(eptr++) = rand() % ('Z' - 'A') + 'A';
-    *(eptr++) = rand() % ('Z' - 'A') + 'A';
-    *(eptr++) = rand() % ('Z' - 'A') + 'A';
-    *(eptr++) = rand() % ('Z' - 'A') + 'A';
     *(eptr++) = ' ';
 
     ssize_t date_len = (rand() % 9) + 5;
@@ -256,10 +269,11 @@ static char* random_line(ssize_t len) {
     return line;
 }
 
-IO_state IO_generate_input(DB* db, ssize_t quantity, ssize_t length) {
+IO_state IO_generate_input(DB* db, ssize_t quantity, ssize_t length)
+{
     srand(time(NULL));
     for (int i = 0; i < quantity; ++i) {
-        Item *it = calloc(1, sizeof(*it));
+        Item* it = calloc(1, sizeof(*it));
         if (construct_item(&it, random_line(length))) {
             fprintf(stderr, "can't create item. tryin another one\n");
         }
