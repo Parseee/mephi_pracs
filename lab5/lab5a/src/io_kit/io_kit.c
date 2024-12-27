@@ -98,7 +98,6 @@ IO_state IO_binary_input(DB* db, const char* const filename)
 
 static IO_state construct_item(Item** item, char* str)
 {
-
     regex_t name;
     int reg_i = 0;
     // sry for regex POSIX sucks ass
@@ -133,6 +132,7 @@ static IO_state construct_item(Item** item, char* str)
         if (errno == ERANGE) {
             report_error("time overflow", IO_INTERNAL_ERROR);
             free(*item);
+            regfree(&name);
             return IO_INTERNAL_ERROR;
         }
     } else if (reg_i == REG_NOMATCH) {
@@ -145,6 +145,7 @@ static IO_state construct_item(Item** item, char* str)
         report_error(msgbuf, IO_INTERNAL_ERROR);
     }
 
+    regfree(&name);
     return IO_OK;
 }
 
