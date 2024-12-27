@@ -29,6 +29,7 @@ DB_state DB_destruct(DB* db)
         if (db->data[i]) {
             free(db->data[i]->name);
             free(db->data[i]->id);
+            free(db->data[i]);
         }
     }
     free(db->data);

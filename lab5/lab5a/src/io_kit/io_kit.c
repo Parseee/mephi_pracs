@@ -126,8 +126,7 @@ static IO_state construct_item(Item** item, char* str)
     reg_i = regexec(&name, str, 4, pmatch, 0);
 
     if (reg_i == 0) {
-        // *item = calloc(1, sizeof(**item));
-        *item = malloc(sizeof(**item));
+        *item = calloc(1, sizeof(**item));
         (*item)->name = calloc((size_t)(pmatch[1].rm_eo - pmatch[1].rm_so) + 1ull, sizeof((*item)->name));
         for (size_t i = 0; i < (size_t)(pmatch[1].rm_eo - pmatch[1].rm_so); ++i) {
             (*item)->name[i] = *(str + pmatch[1].rm_so + i);
@@ -140,8 +139,7 @@ static IO_state construct_item(Item** item, char* str)
         }
         (*item)->id[pmatch[2].rm_eo - pmatch[2].rm_so + 1] = '\0';
 
-        char* eptr = NULL;
-        (*item)->time = strtoll(str + pmatch[3].rm_so, &eptr, 10);
+        (*item)->time = strtoll(str + pmatch[3].rm_so, NULL, 10);
         if (errno == ERANGE) {
             report_error("time overflow", IO_INTERNAL_ERROR);
             free((*item)->name);
