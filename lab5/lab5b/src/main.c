@@ -131,6 +131,7 @@ int main(int argc, char* argv[])
     }
 
     FILE* fd = fopen(output_filename, "w+");
+    free(output_filename);
     fprintf(fd, "x y\n");
     time_t begin, end;
     DB db = (DB) { .capacity = 0, .data = NULL, .size = 0 };
