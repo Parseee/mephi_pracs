@@ -57,6 +57,10 @@ IO_state IO_text_input(DB* db, const char* const filename)
         }
     }
 
+    if (line) {
+        free(line);
+    }
+
     fclose(fd);
 
     return IO_OK;
@@ -93,6 +97,10 @@ IO_state IO_binary_input(DB* db, const char* const filename)
             DB_append(db, new_item);
         }
         line = strtok(NULL, "\n");
+    }
+
+    if (buf) {
+        free(buf);
     }
 
     fclose(fd);
