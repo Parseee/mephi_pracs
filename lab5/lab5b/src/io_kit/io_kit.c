@@ -150,10 +150,14 @@ static IO_state construct_item(Item** item, char* str)
         }
     } else if (reg_i == REG_NOMATCH) {
         item = NULL;
+        regfree(&name);
+        return IO_INTERNAL_ERROR;
     } else {
         char msgbuf[256];
         regerror(reg_i, &name, msgbuf, sizeof(msgbuf));
         report_error(msgbuf, IO_INTERNAL_ERROR);
+        regfree(&name);
+        return IO_INTERNAL_ERROR;
     }
 
     regfree(&name);
@@ -257,7 +261,13 @@ static char* random_line(ssize_t len)
     *(eptr++) = rand() % 10 + '0';
     *(eptr++) = rand() % ('Z' - 'A') + 'A';
     *(eptr++) = rand() % ('Z' - 'A') + 'A';
+    *(eptr++) = '-';
+    *(eptr++) = rand() % ('Z' - 'A') + 'A';
+    *(eptr++) = rand() % ('Z' - 'A') + 'A';
+    *(eptr++) = rand() % ('Z' - 'A') + 'A';
+    *(eptr++) = rand() % ('Z' - 'A') + 'A';
     *(eptr++) = ' ';
+    
 
     ssize_t date_len = (rand() % 9) + 5;
     for (int i = 0; i < date_len; ++i) {

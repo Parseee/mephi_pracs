@@ -24,13 +24,17 @@ DB_state DB_destruct(DB* db)
     assert(db);
     if (!db->data) {
         report_error("database is not init", DB_INTERNAL_ERROR);
+        return DB_INTERNAL_ERROR;
     }
-    for (size_t i = 0; i < db->capacity; ++i) {
+    for (size_t i = 0; i < db->size; ++i) {
         if (db->data[i]) {
-            free(db->data[i]->name);
-            free(db->data[i]->id);
+            if (db->data[i]->name)
+                free(db->data[i]->name);
+            if (db->data[i]->id)
+                free(db->data[i]->id);
             free(db->data[i]);
         }
+
     }
     free(db->data);
     db->data = NULL;
