@@ -3,6 +3,7 @@
 #include <errno.h>
 #include <regex.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -67,18 +68,16 @@ IO_state IO_binary_input(DB* db, const char* const filename)
     }
 
     fseek(fd, SEEK_END, SEEK_END);
-    ssize_t len = ftell(fd);
+    size_t len = ftell(fd);
     rewind(fd);
 
     char* buf = calloc(len, sizeof(*buf));
 
-    if (fread(buf, sizeof(char), len, fd) < 0) {
+    if (fread(buf, sizeof(char), len, fd) == 0) {
         report_error("can't read file", IO_INPUT_ERROR);
         return IO_INPUT_ERROR;
     }
 
-    ssize_t read = 0;
-    size_t len_r = 0;
     char* line = strtok(buf, "\n");
     while (line) {
         Item* new_item = NULL;
@@ -90,6 +89,8 @@ IO_state IO_binary_input(DB* db, const char* const filename)
         }
         line = strtok(NULL, "\n");
     }
+
+    fclose(fd);
 
     return IO_OK;
 }
@@ -113,8 +114,8 @@ static IO_state construct_item(Item** item, char* str)
 
     if (reg_i == 0) {
         *item = calloc(1, sizeof(**item));
-        (*item)->name = calloc(pmatch[1].rm_eo - pmatch[1].rm_so + 1, sizeof((*item)->name));
-        for (size_t i = 0; i < pmatch[1].rm_eo - pmatch[1].rm_so; ++i) {
+        (*item)->name = calloc((size_t)(pmatch[1].rm_eo - pmatch[1].rm_so) + 1ull, sizeof((*item)->name));
+        for (size_t i = 0; i < (size_t)(pmatch[1].rm_eo - pmatch[1].rm_so); ++i) {
             (*item)->name[i] = *(str + pmatch[1].rm_so + i);
         }
         (*item)->name[pmatch[1].rm_eo - pmatch[1].rm_so + 1] = '\0';
@@ -143,7 +144,7 @@ static IO_state construct_item(Item** item, char* str)
 
 IO_state IO_terminal_output(DB* db)
 {
-    for (int i = 0; i < db->size; ++i) {
+    for (size_t i = 0; i < db->size; ++i) {
         printf("%s %s %ld\n", db->data[i]->name, db->data[i]->id, db->data[i]->time);
     }
     return IO_OK;
@@ -159,6 +160,7 @@ IO_state IO_text_output(DB* db, const char* const filename)
     for (int i = 0; i < db->size; ++i) {
         fprintf(fd, "%s %s %ld\n", db->data[i]->name, db->data[i]->id, db->data[i]->time);
     }
+    fclose(fd);
     return IO_OK;
 }
 
@@ -169,7 +171,6 @@ static void add_to_binary(char** buf, size_t* bufsize, size_t* bufcap, char* str
         char* new_buf = NULL;
         if ((new_buf = realloc(*buf, *bufcap * 2)) == NULL) {
             report_error("alloc error\n", IO_INTERNAL_ERROR);
-            // return IO_INTERNAL_ERROR;
         }
         *buf = new_buf;
         new_buf = NULL;
@@ -209,5 +210,7 @@ IO_state IO_binary_output(DB* db, const char* const filename)
     for (int i = 0; i < db->size; ++i) {
         fprintf(fd, "%s %s %ld\n", db->data[i]->name, db->data[i]->id, db->data[i]->time);
     }
+
+    fclose(fd);
     return IO_OK;
 }

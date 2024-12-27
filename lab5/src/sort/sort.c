@@ -68,7 +68,7 @@ void bubble_sort(void* array, size_t array_size, size_t size, bool (*compare)(co
 {
     for (size_t i = 0; i < array_size; ++i) {
         for (size_t j = i + 1; j < array_size; ++j) {
-            // fprintf(stderr, "%s, %s\n", text->text[i], text->text[j]);
+            // fprintf(stderr, "%s, %s\n", *((char**)(array) + i), *((char**)(array) + j));
             if (!compare(array + (i * size), array + (j * size))) {
                 swap(array + (i * size), array + (j * size), size);
             }
@@ -78,36 +78,89 @@ void bubble_sort(void* array, size_t array_size, size_t size, bool (*compare)(co
     return;
 }
 
-static size_t partition(void *array, size_t l, size_t r, size_t array_size, size_t size, bool (*compare)(const void *, const void *)) {
-    void* v = array + ((l + r) / 2) * size;
-    size_t i = l;
-    size_t j = r;
+static size_t partition(void* array, ssize_t l, ssize_t r, size_t array_size, size_t size, bool (*compare)(const void*, const void*))
+{
+    void* pivot = array + l * size;
 
-    while (i < j) {
-        while (compare(array + i * size, v) && i + 1 < array_size) {
+    ssize_t i = l + 1;
+    ssize_t j = r;
+    while (true) {
+        while (i <= j && compare(array + i * size, pivot)) {
             ++i;
         }
-        while (compare(v, array + j * size) && j < array_size) {
+        while (i <= j && compare(pivot, array + j * size)) {
             --j;
         }
-        if (i >= j) break;
-        swap(array + (i++) * size, array + (j--) * size, size);
+        if (i > j) {
+            break;
+        } else {
+            swap(array + i * size, array + j * size, size);
+        }
     }
+
+    swap(pivot, array + j * size, size);
     return j;
 }
 
-static void _q_sort(void *array, size_t l, size_t r , size_t array_size, size_t size, bool (*compare)(const void *, const void *)) {
-    if (array == NULL) {
+static void _q_sort(void* array, ssize_t l, ssize_t r, size_t array_size, size_t size, bool (*compare)(const void*, const void*))
+{
+    if (array == NULL || array_size == 1) {
         return;
     }
 
     if (l < r) {
-        size_t pivot = partition(array, l, r, array_size, size, compare);
-        _q_sort(array, l, pivot, array_size, size, compare);
-        _q_sort(array, pivot, r, array_size, size, compare);
+        ssize_t pivot = partition(array, l, r, array_size, size, compare);
+        _q_sort(array, l, pivot - 1, array_size, size, compare);
+        _q_sort(array, pivot + 1, r, array_size, size, compare);
     }
 }
 
-void q_sort(void *array, size_t array_size, size_t size, bool (*compare)(const void *, const void *)) {
+void q_sort(void* array, size_t array_size, size_t size, bool (*compare)(const void*, const void*))
+{
     _q_sort(array, 0, array_size - 1, array_size, size, compare);
+}
+
+void shaker_sort(void* array, size_t array_size, size_t size, bool (*compare)(const void*, const void*))
+{
+    if (!array || array_size == 1) {
+        return;
+    }
+
+    bool backwards = false;
+    for (size_t i = 0; i < array_size; ++i) {
+        if (backwards) {
+            for (size_t j = array_size - 1; j > i; --j) {
+                if (!compare(array + i * size, array + j * size)) {
+                    swap(array + i * size, array + j * size, size);
+                }
+            }
+        } else {
+            for (size_t j = i + 1; j < array_size; ++j) {
+                if (!compare(array + i * size, array + j * size)) {
+                    swap(array + i * size, array + j * size, size);
+                }
+            }
+        }
+    }
+}
+
+void shell_sort(void* array, size_t array_size, size_t size, bool (*compare)(const void*, const void*))
+{
+    if (!array || array_size == 1) {
+        return;
+    }
+
+    for (int gap = array_size / 2; gap > 0; gap >>= 1) {
+        for (int i = gap; i < array_size; ++i) {
+            void* tmp = array + i * size;
+
+            int j;            
+            for (j = i; j >= gap && compare(array + (j - gap) * size, tmp); j -= gap) {
+                void* t = ((char**)array + (j - gap) * size);
+                ((char**)array)[j * size] = t;
+            }
+
+            ((char**)array)[j * size] = tmp;
+        }
+    }
 }

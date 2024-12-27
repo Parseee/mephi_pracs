@@ -14,13 +14,23 @@ typedef enum { QSORT,
     BUBBLE,
     SHELL,
     COCK_TAIL } sorting;
+
 typedef enum { NAME,
     ID,
     TIME } compare;
 
 bool name_cmp(const void* l, const void* r)
 {
-    return strlen(l) > strlen(r);
+    char* lhs = (*(Item**)l)->name;
+    char* rhs = (*(Item**)r)->name;
+    return strcmp(lhs, rhs) <= 0;
+}
+
+bool cmp(const void* l, const void* r)
+{
+    int lhs = *(int*)l;
+    int rhs = *(int*)r;
+    return lhs <= rhs;
 }
 
 int main(int argc, char* argv[])
@@ -101,10 +111,15 @@ int main(int argc, char* argv[])
         }
     }
 
-    // if (srt == QSORT) {
-    //     q_sort(db.data, db.size, sizeof(db.data), name_cmp);
-    // }
-    // bubble_sort(db.data, db.size, sizeof(db.data), name_cmp);
+    if (srt == QSORT) {
+        q_sort(db.data, db.size, sizeof(db.data), name_cmp);
+    } else if (srt == COCK_TAIL) {
+        shaker_sort(db.data, db.size, sizeof(db.data), name_cmp);
+    } else if (srt == SHELL) {
+        shell_sort(db.data, db.size, sizeof(db.data), name_cmp);
+    } else {
+        bubble_sort(db.data, db.size, sizeof(db.data), name_cmp);
+    }
 
     if (binary) {
         if (output_filename) {

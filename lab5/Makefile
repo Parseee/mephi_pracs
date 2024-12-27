@@ -63,5 +63,6 @@ clean_log:
 
 clean_obj:
 	rm -rf ./build
+	rm -rf *ans*
 
 rebuild: clean build
