@@ -132,10 +132,14 @@ static IO_state construct_item(Item** item, char* str)
         (*item)->time = strtoll(str + pmatch[3].rm_so, &eptr, 10);
         if (errno == ERANGE) {
             report_error("time overflow", IO_INTERNAL_ERROR);
+            free(*item);
+            return IO_INTERNAL_ERROR;
         }
     } else if (reg_i == REG_NOMATCH) {
+        free(*item);
         item = NULL;
     } else {
+        free(*item);
         char msgbuf[256];
         regerror(reg_i, &name, msgbuf, sizeof(msgbuf));
         report_error(msgbuf, IO_INTERNAL_ERROR);
