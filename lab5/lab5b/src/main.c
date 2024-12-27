@@ -151,7 +151,7 @@ int main(int argc, char* argv[])
 
         end = clock();
         double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-        fprintf(fd, "%d %lf\n", i, time_spent);
+        fprintf(fd, "%ld %lf\n", quantity, time_spent);
     }
 
     return EXIT_SUCCESS;

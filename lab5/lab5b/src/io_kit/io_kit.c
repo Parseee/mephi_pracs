@@ -239,7 +239,7 @@ IO_state IO_binary_output(DB* db, const char* const filename)
 
 static char* random_line(ssize_t len)
 {
-    char* line = calloc(len + 1 + 8 + 1 + 18, sizeof(*line));
+    char* line = calloc(len + 1 + 9 + 1 + 18, sizeof(*line));
     char* eptr = line;
     ssize_t name_len = rand() % (len / 3) + 1;
     ssize_t surname_len = rand() % (len / 3) + 1;
@@ -283,7 +283,7 @@ IO_state IO_generate_input(DB* db, ssize_t quantity, ssize_t length)
 {
     srand(time(NULL));
     for (int i = 0; i < quantity; ++i) {
-        Item* it = calloc(1, sizeof(*it));
+        Item* it = NULL;
         char* line = random_line(length);
         if (construct_item(&it, line)) {
             fprintf(stderr, "can't create item. tryin another one\n");
