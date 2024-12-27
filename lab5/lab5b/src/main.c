@@ -130,7 +130,7 @@ int main(int argc, char* argv[])
         }
     }
 
-    FILE* fd = fopen("test.dat", "w+");
+    FILE* fd = fopen(output_filename, "w+");
     fprintf(fd, "x y\n");
     time_t begin, end;
     DB db = (DB) { .capacity = 0, .data = NULL, .size = 0 };
@@ -153,6 +153,8 @@ int main(int argc, char* argv[])
         double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
         fprintf(fd, "%ld %lf\n", quantity, time_spent);
     }
+
+    fclose(fd);
 
     return EXIT_SUCCESS;
 }
