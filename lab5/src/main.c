@@ -26,10 +26,17 @@ bool name_cmp(const void* l, const void* r)
     return strcmp(lhs, rhs) <= 0;
 }
 
-bool cmp(const void* l, const void* r)
+bool id_cmp(const void* l, const void* r)
 {
-    int lhs = *(int*)l;
-    int rhs = *(int*)r;
+    char* lhs = (*(Item**)l)->id;
+    char* rhs = (*(Item**)r)->id;
+    return strcmp(lhs, rhs) <= 0;
+}
+
+bool time_cmp(const void* l, const void* r)
+{
+    time_t lhs = (*(Item**)l)->time;
+    time_t rhs = (*(Item**)r)->time;
     return lhs <= rhs;
 }
 
@@ -42,7 +49,7 @@ int main(int argc, char* argv[])
     char* output_filename = NULL;
     bool binary = false;
     sorting srt = QSORT;
-    compare cmp = NAME;
+    bool (*cmp)(const void*, const void*) = NULL;
 
     int c = 0;
     while ((c = getopt(argc, argv, "i:o:s:c:b")) != -1) {
@@ -77,11 +84,11 @@ int main(int argc, char* argv[])
 
         case ('c'):
             if (strcmp(optarg, "name")) {
-                cmp = NAME;
+                cmp = name_cmp;
             } else if (strcmp(optarg, "id")) {
-                cmp = ID;
+                cmp = id_cmp;
             } else if (strcmp(optarg, "time")) {
-                cmp = TIME;
+                cmp = time_cmp;
             } else {
                 printf("comparator provided is govno\n");
                 exit(0);
@@ -112,13 +119,13 @@ int main(int argc, char* argv[])
     }
 
     if (srt == QSORT) {
-        q_sort(db.data, db.size, sizeof(db.data), name_cmp);
+        q_sort(db.data, db.size, sizeof(db.data), cmp);
     } else if (srt == COCK_TAIL) {
-        shaker_sort(db.data, db.size, sizeof(db.data), name_cmp);
+        shaker_sort(db.data, db.size, sizeof(db.data), cmp);
     } else if (srt == SHELL) {
-        shell_sort(db.data, db.size, sizeof(db.data), name_cmp);
+        shell_sort(db.data, db.size, sizeof(db.data), cmp);
     } else {
-        bubble_sort(db.data, db.size, sizeof(db.data), name_cmp);
+        bubble_sort(db.data, db.size, sizeof(db.data), cmp);
     }
 
     if (binary) {
