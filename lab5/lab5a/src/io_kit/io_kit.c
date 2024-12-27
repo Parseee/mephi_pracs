@@ -126,7 +126,8 @@ static IO_state construct_item(Item** item, char* str)
     reg_i = regexec(&name, str, 4, pmatch, 0);
 
     if (reg_i == 0) {
-        *item = calloc(1, sizeof(**item));
+        // *item = calloc(1, sizeof(**item));
+        *item = malloc(sizeof(**item));
         (*item)->name = calloc((size_t)(pmatch[1].rm_eo - pmatch[1].rm_so) + 1ull, sizeof((*item)->name));
         for (size_t i = 0; i < (size_t)(pmatch[1].rm_eo - pmatch[1].rm_so); ++i) {
             (*item)->name[i] = *(str + pmatch[1].rm_so + i);
@@ -143,15 +144,15 @@ static IO_state construct_item(Item** item, char* str)
         (*item)->time = strtoll(str + pmatch[3].rm_so, &eptr, 10);
         if (errno == ERANGE) {
             report_error("time overflow", IO_INTERNAL_ERROR);
+            free((*item)->name);
+            free((*item)->id);
             free(*item);
             regfree(&name);
             return IO_INTERNAL_ERROR;
         }
     } else if (reg_i == REG_NOMATCH) {
-        free(*item);
         item = NULL;
     } else {
-        free(*item);
         char msgbuf[256];
         regerror(reg_i, &name, msgbuf, sizeof(msgbuf));
         report_error(msgbuf, IO_INTERNAL_ERROR);
@@ -234,7 +235,8 @@ IO_state IO_binary_output(DB* db, const char* const filename)
     return IO_OK;
 }
 
-static char* random_line(ssize_t len) {
+static char* random_line(ssize_t len)
+{
     char* line = calloc(len + 1 + 8 + 1 + 18, sizeof(*line));
     char* eptr = line;
     ssize_t name_len = rand() % (len / 3) + 1;
@@ -269,10 +271,11 @@ static char* random_line(ssize_t len) {
     return line;
 }
 
-IO_state IO_generate_input(DB* db, ssize_t quantity, ssize_t length) {
+IO_state IO_generate_input(DB* db, ssize_t quantity, ssize_t length)
+{
     srand(time(NULL));
     for (int i = 0; i < quantity; ++i) {
-        Item *it = calloc(1, sizeof(*it));
+        Item* it = calloc(1, sizeof(*it));
         if (construct_item(&it, random_line(length))) {
             fprintf(stderr, "can't create item. tryin another one\n");
         }
