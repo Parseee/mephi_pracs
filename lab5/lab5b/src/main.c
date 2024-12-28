@@ -59,13 +59,14 @@ int main(int argc, char* argv[])
     char* output_filename = NULL;
     ssize_t len = 20;
     ssize_t quantity = 10;
+    ssize_t gap = 1000;
     bool descending = false;
-    void (*sorting)(void* const array, const ssize_t array_size, const ssize_t size, bool (*compare)(const void*, const void*));
+    void (*sorting)(void* const array, const ssize_t array_size, const ssize_t size, bool (*compare)(const void*, const void*)) = q_sort;
     bool (*cmp)(const void*, const void*) = name_cmp;
     bool (*n_cmp)(const void*, const void*) = n_name_cmp;
 
     int c = 0;
-    while ((c = getopt(argc, argv, "q:l:o:s:c:d")) != -1) {
+    while ((c = getopt(argc, argv, "q:l:o:g:s:c:d")) != -1) {
         switch (c) {
 
         case ('d'):
@@ -76,14 +77,18 @@ int main(int argc, char* argv[])
             output_filename = strdup(optarg);
             break;
 
+        case ('g'):
+            gap = strtoll(optarg, NULL, 10);
+            break;
+
         case ('s'):
-            if (strcmp(optarg, "bubble")) {
+            if (strcmp(optarg, "bubble") == 0) {
                 sorting = bubble_sort;
-            } else if (strcmp(optarg, "shaker")) {
+            } else if (strcmp(optarg, "shaker") == 0) {
                 sorting = shaker_sort;
-            } else if (strcmp(optarg, "shell")) {
+            } else if (strcmp(optarg, "shell") == 0) {
                 sorting = shell_sort;
-            } else if (strcmp(optarg, "qsort")) {
+            } else if (strcmp(optarg, "qsort") == 0) {
                 sorting = q_sort;
             } else {
                 fprintf(stderr, "sorting provided is govno\n");
@@ -135,22 +140,23 @@ int main(int argc, char* argv[])
     fprintf(fd, "x y\n");
     time_t begin, end;
     DB db = (DB) { .capacity = 0, .data = NULL, .size = 0 };
-    for (int i = 1; i <= 10; ++i) {
-        begin = clock();
+    int iters = quantity;
+    for (int i = 1; i <= iters; ++i) {
         DB_create(&db);
 
         IO_generate_input(&db, quantity, len);
 
+        begin = clock();
         if (descending) {
             sorting(db.data, db.size, sizeof(db.data), n_cmp);
         } else {
             sorting(db.data, db.size, sizeof(db.data), cmp);
         }
+        end = clock();
 
         DB_destruct(&db);
-        quantity *= 2;
+        quantity += gap;
 
-        end = clock();
         double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
         fprintf(fd, "%ld %lf\n", quantity, time_spent);
     }
