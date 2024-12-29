@@ -16,8 +16,8 @@ TEXT_ERROR Text_create(Text* text)
     text->text_capacity = DEFAULT_TEXT_SIZE;
     text->text = calloc(DEFAULT_TEXT_SIZE, sizeof(text->text));
 
-    String *str = NULL;
-    while ((str = String_create_string())->let != EOF) {
+    String* str = NULL;
+    while ((str = String_create_string(NULL))->let != EOF) {
         if (Text_add_line_to_text(text, str)) {
             String_kill_string(str);
             fprintf(stderr, "can't add line\n");
@@ -75,8 +75,9 @@ TEXT_ERROR Text_destruct(Text* text)
     }
 
     for (size_t i = 0; i < text->text_capacity; ++i) {
-        String_kill_string(text->text[i]);
-        free(text->text[i]);
+        if (text->text[i]) {
+            String_kill_string(text->text[i]);
+        }
     }
 
     free(text->text);
@@ -85,4 +86,25 @@ TEXT_ERROR Text_destruct(Text* text)
     text->text_size = 0;
     text->text_capacity = 0;
     return TEXT_OK;
+}
+
+/*
+ldfkaldkmas as as as das das dsdasd 
+aslkd 124 12343kn4 234
+d 
+23       f
+*/
+
+/*
+dsdasd das das as as as ldfkaldkmas
+234 12343kn4 124 aslkd
+d
+f 23
+*/
+
+void Text_sort(Text* text)
+{
+    for (int i = 0; i < text->text_size; ++i) {
+        String_sort(&text->text[i]);
+    }
 }

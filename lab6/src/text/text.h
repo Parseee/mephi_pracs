@@ -23,3 +23,4 @@ TEXT_ERROR Text_create(Text* text);
 TEXT_ERROR Text_get_text(Text* text);
 TEXT_ERROR Text_lengthify(Text* text);
 TEXT_ERROR Text_destruct(Text* text);
+void Text_sort(Text* text);
