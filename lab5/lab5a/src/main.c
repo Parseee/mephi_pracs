@@ -75,6 +75,7 @@ int main(int argc, char* argv[])
 
         case ('d'):
             descending = true;
+            break;
 
         case ('i'):
             input_filename = strdup(optarg);
@@ -85,13 +86,13 @@ int main(int argc, char* argv[])
             break;
 
         case ('s'):
-            if (strcmp(optarg, "bubble")) {
+            if (strcmp(optarg, "bubble") == 0) {
                 sorting = bubble_sort;
-            } else if (strcmp(optarg, "shaker")) {
+            } else if (strcmp(optarg, "shaker") == 0) {
                 sorting = shaker_sort;
-            } else if (strcmp(optarg, "shell")) {
+            } else if (strcmp(optarg, "shell") == 0) {
                 sorting = shell_sort;
-            } else if (strcmp(optarg, "qsort")) {
+            } else if (strcmp(optarg, "qsort") == 0) {
                 sorting = q_sort;
             } else {
                 fprintf(stderr, "sorting provided is govno\n");
