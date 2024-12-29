@@ -49,72 +49,7 @@ void String_print_string(String* str)
     }
 }
 
-static void vectorized_memory_swap(void** ptr1, void** ptr2, void* ptr_tmp, size_t size)
-{
-    assert(ptr1 && "");
-    assert(ptr2 && "");
-    assert(*ptr1 && "");
-    assert(*ptr2 && "");
-    assert(ptr_tmp && "");
-
-    memcpy(ptr_tmp, *ptr1, size);
-    memcpy(*ptr1, *ptr2, size);
-    memcpy(*ptr2, ptr_tmp, size);
-
-    *ptr1 = (char*)(*ptr1) + size;
-    *ptr2 = (char*)(*ptr2) + size;
-}
-
-static void swp(void* ptr1, void* ptr2, size_t size)
-{
-    assert(ptr1 && "");
-    assert(ptr2 && "");
-
-    while (size >= sizeof(uint64_t)) {
-        uint64_t ptr_tmp;
-        vectorized_memory_swap(&ptr1, &ptr2, (void*)&ptr_tmp, sizeof(uint64_t));
-        size -= sizeof(uint64_t);
-    }
-    if (size & sizeof(uint64_t)) {
-        uint32_t ptr_tmp = 0;
-        vectorized_memory_swap(&ptr1, &ptr2, (void*)&ptr_tmp, 4);
-        size -= sizeof(uint32_t);
-    }
-    if (size & sizeof(uint16_t)) {
-        uint16_t ptr_tmp = 0;
-        vectorized_memory_swap(&ptr1, &ptr2, (void*)&ptr_tmp, 2);
-        size -= sizeof(uint16_t);
-    }
-    if (size & sizeof(uint8_t)) {
-        uint8_t ptr_tmp = 0;
-        vectorized_memory_swap(&ptr1, &ptr2, (void*)&ptr_tmp, 1);
-        size -= sizeof(uint8_t);
-    }
-
-    return;
-}
-
-static void swap(Node* l, Node* r)
-{
-    String* tmp = NULL;
-    tmp = l->so->prev->next; // = l->so
-    l->so->prev->next = r->so->prev->next; // = r->so
-    r->so->prev->next = tmp;
-
-    tmp = l->so->prev;
-    l->so->prev = r->so->prev;
-    r->so->prev = tmp;
-
-    tmp = l->eo->next->prev;
-    l->eo->next->prev = r->eo->next->prev;
-    r->eo->next->prev = tmp;
-
-    tmp = l->eo->next;
-    l->eo->next = r->eo->next;
-    r->eo->next = tmp;
-}
-
-int cmp(const void* l, const void* r)
+static int cmp(const void* l, const void* r)
 {
     return (*(Node*)l).len > (*(Node*)r).len;
 }
@@ -171,10 +106,6 @@ void String_sort(String** str)
     // memleakkkkk
     remove_spaces(*str);
     // memleakkkk
-
-    for (int i = 0; i < len; ++i) {
-        fprintf(stderr, "%ld\n", array[i].len);
-    }
 
     *str = array[0].so;
     for (int i = 0; i < len - 1; ++i) {
