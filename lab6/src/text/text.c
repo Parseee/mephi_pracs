@@ -88,10 +88,19 @@ TEXT_ERROR Text_destruct(Text* text)
     return TEXT_OK;
 }
 
+void Text_sort(Text* text)
+{
+    for (int i = 0; i < text->text_size; ++i) {
+        if (text->text[i]->let != '\n') {
+            String_sort(&text->text[i]);
+        }
+    }
+}
+
 /*
-ldfkaldkmas as as as das das dsdasd 
+ldfkaldkmas as as as das das dsdasd
 aslkd 124 12343kn4 234
-d 
+d
 23       f
 */
 
@@ -101,10 +110,3 @@ dsdasd das das as as as ldfkaldkmas
 d
 f 23
 */
-
-void Text_sort(Text* text)
-{
-    for (int i = 0; i < text->text_size; ++i) {
-        String_sort(&text->text[i]);
-    }
-}
