@@ -68,6 +68,9 @@ static STRING_ERROR string_tokenize(String** str, Node* array, size_t* len)
         // *(array[i]) = (Node) { .so = sptr, .eo = eptr->prev, .len = str_len };
         array[i].so = sptr;
         array[i].eo = eptr->prev;
+        if (array[i].eo == NULL) {
+            array[i].eo = array[i].so;
+        }
         array[i].len = str_len;
         str_len = 0;
         while (eptr->let == ' ') { // never goes out of boundaries bc of '\n'
