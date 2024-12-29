@@ -102,13 +102,13 @@ int main(int argc, char* argv[])
             break;
 
         case ('c'):
-            if (strcmp(optarg, "name")) {
+            if (strcmp(optarg, "name") == 0) {
                 cmp = name_cmp;
                 n_cmp = n_name_cmp;
-            } else if (strcmp(optarg, "id")) {
+            } else if (strcmp(optarg, "id") == 0) {
                 cmp = id_cmp;
                 n_cmp = n_id_cmp;
-            } else if (strcmp(optarg, "time")) {
+            } else if (strcmp(optarg, "time") == 0) {
                 cmp = time_cmp;
                 n_cmp = n_time_cmp;
             } else {
